@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { useLanguage } from '../hooks/useLanguage';
 import { Share2, Copy, Users, DollarSign, Gift } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const ReferralSystem: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [copiedLink, setCopiedLink] = useState(false);
 
   if (!user) return null;
 
-  const referralLink = `https://www.freecloudminer.com?ref=${user.referralCode}`;
+  const referralLink = `${window.location.origin}/auth?ref=${user.referralCode || 'LOADING'}`;
 
   const copyReferralLink = async () => {
     try {
       await navigator.clipboard.writeText(referralLink);
       setCopiedLink(true);
-      toast.success('Referans linki kopyalandı!');
+      toast.success(t('success') + ': Referans linki kopyalandı!');
       setTimeout(() => setCopiedLink(false), 2000);
     } catch (error) {
-      toast.error('Link kopyalanamadı');
+      toast.error(t('error') + ': Link kopyalanamadı');
     }
   };
 
@@ -26,7 +28,7 @@ export const ReferralSystem: React.FC = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'FreeCloudMiner - Ücretsiz Kripto Madenciliği',
+          title: 'CryptoCloud Mining - Ücretsiz Kripto Madenciliği',
           text: 'Benimle birlikte kripto para kazanmaya başla! Ücretsiz deneme ile $25 bonus kazan.',
           url: referralLink
         });
@@ -67,7 +69,9 @@ export const ReferralSystem: React.FC = () => {
             <Users className="h-4 w-4 text-blue-400" />
             <p className="text-xs text-gray-400">Davet Edilen</p>
           </div>
-          <p className="text-lg font-bold text-blue-400">0</p>
+          <p className="text-lg font-bold text-blue-400">
+            {user.totalReferrals || 0}
+          </p>
         </div>
       </div>
 
@@ -90,7 +94,7 @@ export const ReferralSystem: React.FC = () => {
             >
               <Copy className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">
-                {copiedLink ? 'Kopyalandı!' : 'Kopyala'}
+                {copiedLink ? 'Kopyalandı!' : t('copyAddress')}
               </span>
             </button>
           </div>
@@ -108,13 +112,21 @@ export const ReferralSystem: React.FC = () => {
       {/* How it works */}
       <div className="mt-6 p-4 bg-gray-800/30 rounded-lg">
         <h4 className="text-white font-medium mb-2 text-sm">Nasıl Çalışır?</h4>
-        <ul className="text-xs text-gray-300 space-y-1">
-          <li>• Arkadaşın senin linkinden kayıt olur</li>
-          <li>• Paket satın aldığında %20 bonus kazanırsın</li>
-          <li>• Bonus direkt bakiyene eklenir</li>
-          <li>• Sınırsız referans yapabilirsin</li>
-        </ul>
+        <div className="text-xs text-gray-300 space-y-2">
+          <p>
+            Referans linkinizi paylaşın ve arkadaşlarınız kayıt olduğunda %20 komisyon kazanın:
+          </p>
+          <div className="bg-gray-700/50 p-2 rounded font-mono text-blue-300">
+            {referralLink}
+          </div>
+          <p>
+            • Bu link ile kayıt olan kullanıcılar otomatik olarak sizin referansınız olur
+            • Referansınız paket satın aldığında %20 komisyon kazanırsınız
+            • Komisyonlar otomatik olarak bakiyenize eklenir
+            • Tüm referans kazançlarınız şeffaf şekilde takip edilir
+          </p>
+        </div>
       </div>
     </div>
   );
-};
+}

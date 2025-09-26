@@ -1,10 +1,11 @@
 // src/hooks/useAuth.ts
 import { useState, useEffect } from 'react';
-import { User as FirebaseUser, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
-import { ref, set, get, onValue, off } from 'firebase/database';
+import { User as FirebaseUser, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'firebase/auth';
+import { ref, set, get, onValue, update } from 'firebase/database';
 import { auth, database } from '../config/firebase';
 import { User } from '../types';
 import { generateReferralCode, generateDeviceFingerprint } from '../utils/miningCalculations';
+import { detectUserLanguage } from '../utils/languages';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -26,7 +27,16 @@ export const useAuth = () => {
             userDataUnsubscribe = onValue(userRef, (userSnapshot) => {
               if (userSnapshot.exists()) {
                 const userData = userSnapshot.val();
-                setUser(userData);
+                
+                // Mevcut kullanıcılar için referans kodu yoksa ekle
+                if (!userData.referralCode) {
+                  const referralCode = generateReferralCode(firebaseUser.uid);
+                  const updatedUserData = { ...userData, referralCode };
+                  set(userRef, updatedUserData);
+                  setUser(updatedUserData);
+                } else {
+                  setUser(userData);
+                }
               } else {
                 console.warn('User data not found in database');
                 setUser(null);
@@ -55,9 +65,21 @@ export const useAuth = () => {
                 const referrer = Object.values(users).find((u: any) => u.referralCode === referralParam);
                 if (referrer) {
                   referredBy = (referrer as any).uid;
+                  
+                  // Referans veren kullanıcının referans sayısını artır
+                  const referrerRef = ref(database, `users/${(referrer as any).uid}`);
+                  const referrerData = referrer as any;
+                  await set(referrerRef, {
+                    ...referrerData,
+                    totalReferrals: (userData.totalReferrals || 0) + 1
+                  });
                 }
               }
             }
+            
+            // Kullanıcı dilini ve ülkesini tespit et
+            const userLanguage = detectUserLanguage();
+            const userCountry = await getUserCountry();
             
             const newUser: User = {
               uid: firebaseUser.uid,
@@ -68,13 +90,16 @@ export const useAuth = () => {
               trialEndDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days
               totalTrialEarnings: 0,
               balance: 0,
-              isAdmin: false,
+              isAdmin: firebaseUser.email === 'admin@cryptocloudmining.com', // İlk admin hesabı
               referralCode,
-              referredBy,
+              ...(referredBy && { referredBy }),
               referralEarnings: 0,
+              totalReferrals: 0,
               isBanned: false,
-              deviceFingerprint,
-              lastLoginIP: await getUserIP()
+              deviceFingerprint: deviceFingerprint,
+              language: userLanguage,
+              lastLoginIP: await getUserIP(),
+              country: userCountry
             };
             
             await set(userRef, newUser);
@@ -143,8 +168,7 @@ export const useAuth = () => {
         const userSnapshot = await get(userRef);
         if (userSnapshot.exists()) {
           const userData = userSnapshot.val();
-          await set(userRef, {
-            ...userData,
+          await update(userRef, {
             lastLoginIP: userIP,
             deviceFingerprint
           });
@@ -250,6 +274,46 @@ export const useAuth = () => {
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      setLoading(true);
+      
+      if (!email) {
+        throw new Error('Email is required');
+      }
+      
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        throw new Error('Invalid email format');
+      }
+      
+      await sendPasswordResetEmail(auth, email);
+      return { success: true };
+    } catch (error: any) {
+      let errorMessage = 'Password reset failed';
+      
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorMessage = 'No account found with this email';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'Invalid email address';
+          break;
+        case 'auth/too-many-requests':
+          errorMessage = 'Too many requests. Please try again later';
+          break;
+        default:
+          errorMessage = error.message || 'Password reset failed';
+      }
+      
+      console.error('Password reset error:', error);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = async () => {
     try {
       setLoading(true);
@@ -259,6 +323,19 @@ export const useAuth = () => {
       throw new Error('Logout failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Update user language
+  const updateUserLanguage = async (language: string) => {
+    if (!user) return;
+    
+    try {
+      const userRef = ref(database, `users/${user.uid}`);
+      await update(userRef, { language });
+    } catch (error) {
+      console.error('Failed to update user language:', error);
+      throw new Error('Failed to update language preference');
     }
   };
 
@@ -284,6 +361,17 @@ export const useAuth = () => {
       const response = await fetch('https://api.ipify.org?format=json');
       const data = await response.json();
       return data.ip;
+    } catch (error) {
+      return 'unknown';
+    }
+  };
+
+  // Kullanıcı ülkesi alma
+  const getUserCountry = async (): Promise<string> => {
+    try {
+      const response = await fetch('https://ipapi.co/json/');
+      const data = await response.json();
+      return data.country_code || 'unknown';
     } catch (error) {
       return 'unknown';
     }
@@ -361,7 +449,9 @@ export const useAuth = () => {
     loading,
     login,
     register,
+    resetPassword,
     logout,
-    updateUserData
+    updateUserData,
+    updateUserLanguage
   };
 };

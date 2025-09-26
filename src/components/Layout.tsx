@@ -27,9 +27,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const handleLogout = async () => {
     try {
+      setIsMobileMenuOpen(false);
       await logout();
       toast.success('Başarıyla çıkış yapıldı');
-      navigate('/');
+      // Navigation will be handled by auth state change
     } catch (error) {
       toast.error('Çıkış yapılırken hata oluştu');
     }
@@ -100,7 +101,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                   {user?.email}
                 </p>
                 <p className="text-xs text-gray-400">
-                  ${user?.balance.toFixed(2) || '0.00'}
+                  ${(user?.balance ?? 0).toFixed(2)}
                 </p>
               </div>
             </div>
@@ -179,7 +180,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                       {user?.email}
                     </p>
                     <p className="text-xs text-gray-400">
-                      Bakiye: ${user?.balance.toFixed(2) || '0.00'}
+                      Bakiye: ${(user?.balance ?? 0).toFixed(2)}
                     </p>
                   </div>
                 </div>

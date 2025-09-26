@@ -5,6 +5,14 @@ export interface MiningCalculation {
   dailyEarningBonus: number;
 }
 
+export interface User {
+  id: string;
+  isBanned?: boolean;
+  activePackage?: string;
+  trialEndDate?: string | Date;
+  totalTrialEarnings?: number;
+}
+
 export const getPackageMultipliers = (packageId?: string): MiningCalculation => {
   const multipliers: Record<string, MiningCalculation> = {
     starter: {
@@ -45,9 +53,7 @@ export const calculateMiningEarnings = (
   }
   
   // Maksimum süre kontrolü (24 saat)
-  if (elapsedHours > 24) {
-    elapsedHours = 24;
-  }
+  const clampedElapsedHours = Math.min(elapsedHours, 24);
   
   const multipliers = getPackageMultipliers(packageId);
   const hashRateRatio = hashRate / baseHashRate;
@@ -59,10 +65,10 @@ export const calculateMiningEarnings = (
   const hourlyEarning = baseEarning * hashRateRatio * effectiveMultiplier;
   
   // Sonuç kontrolü
-  const result = hourlyEarning * elapsedHours;
+  const result = hourlyEarning * clampedElapsedHours;
   
   // Makul olmayan kazanç kontrolü
-  const maxReasonableEarning = baseEarning * 10 * elapsedHours;
+  const maxReasonableEarning = baseEarning * 10 * clampedElapsedHours;
   if (result > maxReasonableEarning) {
     console.warn('Calculated earnings exceed reasonable limits');
     return maxReasonableEarning;
@@ -77,20 +83,23 @@ export const calculateHashRate = (baseHashRate: number, packageId?: string): num
     return 1000; // Default hash rate
   }
   
+  // GÜVENLİK: Sadece onaylanmış paketler için hash rate artışı
+  if (!packageId) {
+    // Paket yoksa sadece base hash rate
+    return baseHashRate;
+  }
+  
   const multipliers = getPackageMultipliers(packageId);
+  const result = Math.floor(baseHashRate * multipliers.hashRateMultiplier);
   
-  // Maksimum hash rate kontrolü
-  const maxMultiplier = packageId ? 10 : 1; // Premium paketler için max 10x, trial için 1x
-  const effectiveMultiplier = Math.min(multipliers.hashRateMultiplier, maxMultiplier);
-  
-  const result = Math.floor(baseHashRate * effectiveMultiplier);
-  
-  // Minimum ve maksimum değer kontrolü
-  return Math.max(baseHashRate, Math.min(result, baseHashRate * 10));
+  return Math.max(baseHashRate, result);
 };
 
-export const canUserMine = (user: any): boolean => {
+export const canUserMine = (user: User | null | undefined): boolean => {
   if (!user) return false;
+  
+  // Ban kontrolü
+  if (user.isBanned) return false;
   
   // Check if user has active package
   if (user.activePackage) return true;
@@ -99,7 +108,7 @@ export const canUserMine = (user: any): boolean => {
   const trialEndDate = user.trialEndDate ? new Date(user.trialEndDate) : null;
   const now = new Date();
   const trialActive = trialEndDate && now < trialEndDate;
-  const earningsWithinLimit = user.totalTrialEarnings < 25;
+  const earningsWithinLimit = (user.totalTrialEarnings || 0) < 25;
   
   return trialActive && earningsWithinLimit;
 };
@@ -113,4 +122,85 @@ export const formatHashRate = (hashRate: number): string => {
     return `${(hashRate / 1000).toFixed(1)}KH/s`;
   }
   return `${hashRate}H/s`;
-}
+};
+
+// Yardımcı fonksiyonlar
+export const validateMiningParameters = (
+  baseEarning: number,
+  hashRate: number,
+  baseHashRate: number,
+  elapsedHours: number
+): boolean => {
+  return baseEarning >= 0 && 
+         hashRate >= 0 && 
+         baseHashRate > 0 && 
+         elapsedHours >= 0;
+};
+
+export const getMaxTrialEarnings = (): number => {
+  return 25;
+};
+
+export const getMaxDailyHours = (): number => {
+  return 24;
+};
+
+export const generateDeviceFingerprint = async (): Promise<string> => {
+  // Cihaz parmak izi oluşturma
+  let canvasFingerprint = '';
+  try {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.textBaseline = 'top';
+      ctx.font = '14px Arial';
+      ctx.fillText('Device fingerprint', 2, 2);
+      canvasFingerprint = canvas.toDataURL();
+    }
+  } catch (error) {
+    console.warn('Canvas fingerprinting failed:', error);
+  }
+  
+  const fingerprint = [
+    navigator.userAgent,
+    navigator.language,
+    screen.width + 'x' + screen.height,
+    new Date().getTimezoneOffset(),
+    canvasFingerprint,
+    navigator.hardwareConcurrency || 0,
+    navigator.deviceMemory || 0
+  ].join('|');
+  
+  // Basit hash fonksiyonu
+  let hash = 0;
+  for (let i = 0; i < fingerprint.length; i++) {
+    const char = fingerprint.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // 32bit integer'a çevir
+  }
+  
+  return Math.abs(hash).toString(16);
+};
+
+export const generateReferralCode = (userId: string): string => {
+  // Kullanıcı ID'sinden referans kodu oluştur
+  const timestamp = Date.now().toString();
+  const combined = userId + timestamp;
+  
+  // Basit hash fonksiyonu
+  let hash = 0;
+  for (let i = 0; i < combined.length; i++) {
+    const char = combined.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // 32bit integer'a çevir
+  }
+  
+  // 8 karakterlik referans kodu oluştur
+  const code = Math.abs(hash).toString(36).toUpperCase().substring(0, 8);
+  return code.padStart(8, '0');
+};
+
+export const calculateReferralBonus = (amount: number): number => {
+  // Calculate 20% referral bonus
+  return amount * 0.2;
+};

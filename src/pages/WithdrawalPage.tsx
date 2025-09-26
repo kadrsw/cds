@@ -15,7 +15,7 @@ export const WithdrawalPage: React.FC = () => {
   const [withdrawalRequests, setWithdrawalRequests] = useState<WithdrawalRequest[]>([]);
 
   const minWithdrawal = 10;
-  const maxWithdrawal = user?.balance || 0;
+  const maxWithdrawal = user?.balance ?? 0;
 
   useEffect(() => {
     if (!user) return;
@@ -124,7 +124,7 @@ export const WithdrawalPage: React.FC = () => {
           </div>
           <div>
             <p className="text-sm text-gray-400">Kullanılabilir Bakiye</p>
-            <p className="text-3xl font-bold text-white">${user?.balance.toFixed(2) || '0.00'}</p>
+            <p className="text-3xl font-bold text-white">${(user?.balance ?? 0).toFixed(2)}</p>
           </div>
         </div>
       </div>

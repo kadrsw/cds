@@ -3,12 +3,18 @@ import { useAuth } from '../hooks/useAuth';
 import { User, Calendar, DollarSign, Package, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 
+const isValidDate = (dateString: string | null | undefined): boolean => {
+  if (!dateString) return false;
+  const date = new Date(dateString);
+  return !isNaN(date.getTime());
+};
+
 export const ProfilePage: React.FC = () => {
   const { user } = useAuth();
 
   if (!user) return null;
 
-  const isTrialActive = user.trialEndDate && new Date() < new Date(user.trialEndDate) && user.totalTrialEarnings < 25;
+  const isTrialActive = user.trialEndDate && isValidDate(user.trialEndDate) && new Date() < new Date(user.trialEndDate) && (user.totalTrialEarnings ?? 0) < 25;
 
   return (
     <div className="space-y-8">
@@ -38,7 +44,7 @@ export const ProfilePage: React.FC = () => {
             <div>
               <p className="text-sm text-gray-400">Üyelik Tarihi</p>
               <p className="text-white font-medium">
-                {format(new Date(user.createdAt), 'dd MMM yyyy')}
+                {isValidDate(user.createdAt) ? format(new Date(user.createdAt), 'dd MMM yyyy') : 'Belirtilmemiş'}
               </p>
             </div>
           </div>
@@ -65,7 +71,7 @@ export const ProfilePage: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-gray-400">Deneme Kazancı</p>
-              <p className="text-2xl font-bold text-white">${user.totalTrialEarnings.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-white">${(user.totalTrialEarnings ?? 0).toFixed(2)}</p>
             </div>
           </div>
 
@@ -93,7 +99,7 @@ export const ProfilePage: React.FC = () => {
               <div>
                 <p className="text-sm text-gray-400">Deneme Bitiş Tarihi</p>
                 <p className="text-white font-medium">
-                  {user.trialEndDate ? format(new Date(user.trialEndDate), 'dd MMM yyyy') : 'Belirtilmemiş'}
+                  {user.trialEndDate && isValidDate(user.trialEndDate) ? format(new Date(user.trialEndDate), 'dd MMM yyyy') : 'Belirtilmemiş'}
                 </p>
               </div>
             </div>
@@ -114,12 +120,12 @@ export const ProfilePage: React.FC = () => {
           <div className="mt-6">
             <div className="flex justify-between text-sm text-gray-400 mb-2">
               <span>Deneme Kazanç İlerlemesi</span>
-              <span>${user.totalTrialEarnings.toFixed(2)} / $25.00</span>
+              <span>${(user.totalTrialEarnings ?? 0).toFixed(2)} / $25.00</span>
             </div>
             <div className="w-full bg-gray-700 rounded-full h-2">
               <div
                 className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-green-500 transition-all"
-                style={{ width: `${Math.min((user.totalTrialEarnings / 25) * 100, 100)}%` }}
+                style={{ width: `${Math.min(((user.totalTrialEarnings ?? 0) / 25) * 100, 100)}%` }}
               />
             </div>
           </div>
@@ -155,7 +161,7 @@ export const ProfilePage: React.FC = () => {
               </div>
             </div>
             <p className="text-sm text-gray-400">
-              {format(new Date(user.createdAt), 'dd MMM yyyy')}
+              {isValidDate(user.createdAt) ? format(new Date(user.createdAt), 'dd MMM yyyy') : 'Belirtilmemiş'}
             </p>
           </div>
         </div>

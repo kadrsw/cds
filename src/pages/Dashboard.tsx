@@ -2,6 +2,8 @@
 import React from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { TrialStatus } from '../components/TrialStatus';
+import { ReferralSystem } from '../components/ReferralSystem';
+import { UpgradePrompt } from '../components/UpgradePrompt';
 import { TrendingUp, DollarSign, Clock, Package, Pickaxe, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -11,7 +13,7 @@ export const Dashboard: React.FC = () => {
   const stats = [
     {
       label: 'Toplam Bakiye',
-      value: `$${user?.balance.toFixed(2) || '0.00'}`,
+      value: `$${(user?.balance ?? 0).toFixed(2)}`,
       icon: DollarSign,
       color: 'text-green-400',
       bgColor: 'bg-green-600/20',
@@ -20,11 +22,11 @@ export const Dashboard: React.FC = () => {
     },
     {
       label: 'Deneme Kazancı',
-      value: `$${user?.totalTrialEarnings.toFixed(2) || '0.00'}`,
+      value: `$${(user?.totalTrialEarnings ?? 0).toFixed(2)}`,
       icon: TrendingUp,
       color: 'text-blue-400',
       bgColor: 'bg-blue-600/20',
-      change: `${user?.totalTrialEarnings ? '+' + ((user.totalTrialEarnings / 25) * 100).toFixed(1) + '%' : '0%'}`,
+      change: `${user?.totalTrialEarnings ? '+' + (((user.totalTrialEarnings ?? 0) / 25) * 100).toFixed(1) + '%' : '0%'}`,
       changeColor: 'text-blue-400'
     },
     {
@@ -83,6 +85,9 @@ export const Dashboard: React.FC = () => {
 
       {/* Trial Status */}
       <TrialStatus />
+
+      {/* Referral System */}
+      <ReferralSystem />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
@@ -179,7 +184,7 @@ export const Dashboard: React.FC = () => {
                 </div>
               </div>
               <p className="text-green-400 font-medium text-xs md:text-sm">
-                +${user.balance.toFixed(2)}
+                +${(user.balance ?? 0).toFixed(2)}
               </p>
             </div>
           )}
@@ -197,7 +202,7 @@ export const Dashboard: React.FC = () => {
               <div>
                 <h3 className="text-white font-semibold text-sm md:text-base">Deneme Aktif</h3>
                 <p className="text-gray-300 text-xs md:text-sm">
-                  ${(25 - (user?.totalTrialEarnings || 0)).toFixed(2)} kaldı
+                  ${(25 - (user?.totalTrialEarnings ?? 0)).toFixed(2)} kaldı
                 </p>
               </div>
             </div>
@@ -210,6 +215,9 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Upgrade Prompt */}
+      <UpgradePrompt />
     </div>
   );
 };

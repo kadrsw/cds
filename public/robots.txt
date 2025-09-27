@@ -1,15 +1,15 @@
-# robots.txt - public/ klasörüne koyun
 User-agent: *
 Allow: /
-Disallow: /auth
 Disallow: /dashboard
+Disallow: /admin
+Disallow: /auth
+Disallow: /profile
 Disallow: /mining
 Disallow: /packages
-Disallow: /profile
-Disallow: /admin
 Disallow: /withdrawal
+Disallow: /support
 
-# Sitemap konumu
 Sitemap: https://www.freecloudminer.com/sitemap.xml
 
-# sitemap.xml - public/ klasörüne koyun
+# Google crawl rate
+Crawl-delay: 1

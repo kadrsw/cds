@@ -13,11 +13,12 @@ import { AdminPage } from './pages/AdminPage';
 import { WithdrawalPage } from './pages/WithdrawalPage';
 import { SupportPage } from './pages/SupportPage';
 import { AuthPage } from './pages/AuthPage';
+import { BlogPage } from './pages/BlogPage';
+import { BlogPostPage } from './pages/BlogPostPage';
 import { useAuth } from './hooks/useAuth';
 
 function App() {
   const { user, loading } = useAuth();
-
 
   if (loading) {
     return (
@@ -71,6 +72,17 @@ function App() {
                   <LandingPage />
                 )
               } 
+            />
+            
+            {/* Blog sayfaları - Public erişim (giriş yapmaya gerek yok) */}
+            <Route 
+              path="/blog" 
+              element={<BlogPage />} 
+            />
+            
+            <Route 
+              path="/blog/:slug" 
+              element={<BlogPostPage />} 
             />
             
             {/* Auth sayfası */}

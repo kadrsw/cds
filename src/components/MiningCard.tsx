@@ -1,8 +1,9 @@
 // src/components/MiningCard.tsx
 import React, { useState, useEffect } from 'react';
 import { Coin, MiningSession } from '../types';
-import { Play, Square, TrendingUp, Zap } from 'lucide-react';
-import { formatHashRate } from '../utils/miningCalculations';
+import { Play, Square, TrendingUp, Zap, Clock } from 'lucide-react';
+import { formatHashRate, PACKAGES } from '../utils/miningCalculations';
+import { useAuth } from '../hooks/useAuth';
 
 interface MiningCardProps {
   coin: Coin;
@@ -19,13 +20,16 @@ export const MiningCard: React.FC<MiningCardProps> = ({
   onStop,
   disabled = false
 }) => {
+  const { user } = useAuth();
   const [progress, setProgress] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState('');
+  const [estimatedEarning, setEstimatedEarning] = useState(0);
 
   useEffect(() => {
     if (!session?.isActive) {
       setProgress(0);
       setTimeElapsed('');
+      setEstimatedEarning(0);
       return;
     }
 
@@ -50,18 +54,40 @@ export const MiningCard: React.FC<MiningCardProps> = ({
       } else {
         setTimeElapsed(`${seconds}sn`);
       }
+      
+      // DÜZELTME: Paket bazlı tahmini kazanç hesaplama
+      const elapsedHours = elapsed / 3600;
+      let hourlyEarning = coin.baseEarning; // Default trial earning
+      
+      if (user?.activePackage && PACKAGES[user.activePackage as keyof typeof PACKAGES]) {
+        const packageData = PACKAGES[user.activePackage as keyof typeof PACKAGES];
+        hourlyEarning = packageData.hourlyEarning;
+      }
+      
+      const estimated = hourlyEarning * elapsedHours;
+      setEstimatedEarning(estimated);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [session]);
+  }, [session, coin, user]);
 
   const isActive = session?.isActive || false;
-  const hashRate = session?.hashRate || coin.baseHashRate;
+  
+  // DÜZELTME: Doğru hash rate gösterimi
+  let displayHashRate = session?.hashRate || coin.baseHashRate;
+  let expectedDailyEarning = coin.baseEarning * 24; // Trial için günlük kazanç
+  
+  if (user?.activePackage && PACKAGES[user.activePackage as keyof typeof PACKAGES]) {
+    const packageData = PACKAGES[user.activePackage as keyof typeof PACKAGES];
+    displayHashRate = packageData.hashRate;
+    expectedDailyEarning = packageData.dailyEarning;
+  }
+  
   const earnings = session?.totalEarned || 0;
 
   // CSS class name için animation
   const pulseAnimation = `
-    @keyframes mining-pulse {
+    @keyframes mining-pulse-${coin.id} {
       0%, 100% { opacity: 0.4; }
       50% { opacity: 1; }
     }
@@ -111,6 +137,24 @@ export const MiningCard: React.FC<MiningCardProps> = ({
           </button>
         </div>
 
+        {/* Package Info */}
+        {user?.activePackage && (
+          <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-lg p-3 mb-4 border border-purple-500/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-purple-400"></div>
+                <span className="text-xs text-purple-300">
+                  {user.activePackage === 'starter' ? 'Başlangıç' :
+                   user.activePackage === 'professional' ? 'Profesyonel' : 'Kurumsal'} Paketi
+                </span>
+              </div>
+              <span className="text-xs text-purple-400 font-semibold">
+                ${expectedDailyEarning.toFixed(2)}/gün
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Active Mining Display */}
         {isActive && (
           <div className="space-y-4">
@@ -133,7 +177,7 @@ export const MiningCard: React.FC<MiningCardProps> = ({
                   <p className="text-gray-400 text-xs">Hash Hızı</p>
                 </div>
                 <p className="text-white font-semibold text-xs md:text-sm">
-                  {formatHashRate(hashRate)}
+                  {formatHashRate(displayHashRate)}
                 </p>
               </div>
               
@@ -148,12 +192,18 @@ export const MiningCard: React.FC<MiningCardProps> = ({
               </div>
             </div>
 
-            {/* Time Elapsed */}
+            {/* Time Elapsed and Estimated */}
             {timeElapsed && (
               <div className="bg-gray-700/30 rounded-lg p-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-2">
                   <span className="text-gray-400 text-xs">Madencilik Süresi</span>
                   <span className="text-white font-medium text-xs">{timeElapsed}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 text-xs">Tahmini Kazanç</span>
+                  <span className="text-green-400 font-medium text-xs">
+                    ${estimatedEarning.toFixed(6)}
+                  </span>
                 </div>
               </div>
             )}
@@ -166,7 +216,7 @@ export const MiningCard: React.FC<MiningCardProps> = ({
                   className="w-1 h-1 md:w-2 md:h-2 rounded-full"
                   style={{ 
                     backgroundColor: coin.color,
-                    animation: `mining-pulse 1.5s infinite ${i * 0.2}s`
+                    animation: `mining-pulse-${coin.id} 1.5s infinite ${i * 0.2}s`
                   }}
                 />
               ))}
@@ -192,7 +242,15 @@ export const MiningCard: React.FC<MiningCardProps> = ({
               <Play className="h-6 w-6 text-gray-500" />
             </div>
             <p className="text-gray-400 text-sm">{coin.symbol} kazanmak için madenciliği başlatın</p>
-            <p className="text-gray-500 text-xs mt-1">Temel hız: {formatHashRate(coin.baseHashRate)}</p>
+            <p className="text-gray-500 text-xs mt-1">
+              {user?.activePackage ? 
+                `Hash hızı: ${formatHashRate(displayHashRate)}` :
+                `Temel hız: ${formatHashRate(coin.baseHashRate)}`
+              }
+            </p>
+            <p className="text-gray-500 text-xs mt-1">
+              Beklenen günlük: ${expectedDailyEarning.toFixed(2)}
+            </p>
           </div>
         )}
       </div>

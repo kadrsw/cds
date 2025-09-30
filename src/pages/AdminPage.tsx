@@ -3,7 +3,7 @@ import { ref, onValue, set, push, get, update } from 'firebase/database';
 import { database } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
 import { PaymentNotification, WithdrawalRequest, User, ReferralBonus, SupportTicket } from '../types';
-import { Check, X, Eye, DollarSign, Users, Package, AlertCircle, MessageCircle, UserCheck } from 'lucide-react';
+import { Check, X, Eye, DollarSign, Users, Package, AlertCircle, MessageCircle, UserCheck, Edit, Plus, Minus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { calculateReferralBonus } from '../utils/miningCalculations';
@@ -17,6 +17,23 @@ export const AdminPage: React.FC = () => {
   const [referralBonuses, setReferralBonuses] = useState<ReferralBonus[]>([]);
   const [activeTab, setActiveTab] = useState<'payments' | 'withdrawals' | 'users' | 'support' | 'referrals'>('payments');
   const [loading, setLoading] = useState(false);
+  
+  // Bakiye düzenleme modal state'leri
+  const [editBalanceModal, setEditBalanceModal] = useState<{
+    isOpen: boolean;
+    userId: string | null;
+    currentBalance: number;
+    newBalance: string;
+    operation: 'add' | 'subtract' | 'set';
+    reason: string;
+  }>({
+    isOpen: false,
+    userId: null,
+    currentBalance: 0,
+    newBalance: '',
+    operation: 'add',
+    reason: ''
+  });
 
   useEffect(() => {
     if (!user?.isAdmin) return;
@@ -90,6 +107,94 @@ export const AdminPage: React.FC = () => {
     };
   }, [user]);
 
+  // Bakiye düzenleme fonksiyonları
+  const openBalanceEditModal = (userId: string, currentBalance: number) => {
+    setEditBalanceModal({
+      isOpen: true,
+      userId,
+      currentBalance,
+      newBalance: '',
+      operation: 'add',
+      reason: ''
+    });
+  };
+
+  const closeBalanceEditModal = () => {
+    setEditBalanceModal({
+      isOpen: false,
+      userId: null,
+      currentBalance: 0,
+      newBalance: '',
+      operation: 'add',
+      reason: ''
+    });
+  };
+
+  const handleBalanceUpdate = async () => {
+    if (!editBalanceModal.userId || !editBalanceModal.newBalance) {
+      toast.error('Lütfen bir miktar girin');
+      return;
+    }
+
+    const amount = parseFloat(editBalanceModal.newBalance);
+    if (isNaN(amount) || amount < 0) {
+      toast.error('Geçerli bir miktar girin');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const userRef = ref(database, `users/${editBalanceModal.userId}`);
+      const userSnapshot = await get(userRef);
+      
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.val();
+        let newBalance = userData.balance || 0;
+        
+        // İşlem türüne göre yeni bakiye hesapla
+        switch (editBalanceModal.operation) {
+          case 'add':
+            newBalance += amount;
+            break;
+          case 'subtract':
+            newBalance = Math.max(0, newBalance - amount);
+            break;
+          case 'set':
+            newBalance = amount;
+            break;
+        }
+        
+        // Bakiyeyi güncelle
+        await update(userRef, {
+          balance: newBalance,
+          lastBalanceUpdate: new Date().toISOString(),
+          lastBalanceUpdateBy: user?.uid,
+          lastBalanceUpdateReason: editBalanceModal.reason || 'Admin düzenlemesi'
+        });
+        
+        // Log oluştur (opsiyonel)
+        const logRef = ref(database, 'balanceLogs');
+        await push(logRef, {
+          userId: editBalanceModal.userId,
+          adminId: user?.uid,
+          previousBalance: userData.balance || 0,
+          newBalance,
+          operation: editBalanceModal.operation,
+          amount,
+          reason: editBalanceModal.reason || 'Admin düzenlemesi',
+          timestamp: new Date().toISOString()
+        });
+        
+        toast.success('Bakiye başarıyla güncellendi');
+        closeBalanceEditModal();
+      }
+    } catch (error) {
+      toast.error('Bakiye güncellenemedi');
+      console.error('Balance update error:', error);
+    }
+    setLoading(false);
+  };
+
   const handlePaymentApproval = async (notificationId: string, approved: boolean, adminNotes?: string) => {
     setLoading(true);
     try {
@@ -113,8 +218,8 @@ export const AdminPage: React.FC = () => {
           const userData = userSnapshot.val();
           
           // Calculate package expiry date
-          const packageDuration = notification.packageId === 'starter' ? 30 : 
-                                 notification.packageId === 'professional' ? 60 : 90;
+          const packageDuration = notification.packageId === 'starter' ? 90 : 
+                                 notification.packageId === 'professional' ? 90 : 90;
           const expiryDate = new Date();
           expiryDate.setDate(expiryDate.getDate() + packageDuration);
           
@@ -640,7 +745,7 @@ export const AdminPage: React.FC = () => {
         </div>
       )}
 
-      {/* User Management */}
+      {/* User Management with Balance Edit */}
       {activeTab === 'users' && (
         <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700">
           <h3 className="text-xl font-semibold text-white mb-6">Kullanıcı Yönetimi</h3>
@@ -661,7 +766,18 @@ export const AdminPage: React.FC = () => {
                 {users.map((userData) => (
                   <tr key={userData.uid} className="border-b border-gray-700/50">
                     <td className="py-3 text-white">{userData.email}</td>
-                    <td className="py-3 text-green-400">${userData.balance.toFixed(2)}</td>
+                    <td className="py-3 text-green-400">
+                      <div className="flex items-center space-x-2">
+                        <span>${(userData.balance || 0).toFixed(2)}</span>
+                        <button
+                          onClick={() => openBalanceEditModal(userData.uid, userData.balance || 0)}
+                          className="p-1 rounded hover:bg-gray-600 transition-colors"
+                          title="Bakiyeyi Düzenle"
+                        >
+                          <Edit className="h-4 w-4 text-blue-400" />
+                        </button>
+                      </div>
+                    </td>
                     <td className="py-3 text-white">{userData.activePackage || 'Ücretsiz Deneme'}</td>
                     <td className="py-3 text-blue-400">{getUserReferralCount(userData.uid)}</td>
                     <td className="py-3">
@@ -702,6 +818,132 @@ export const AdminPage: React.FC = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Balance Edit Modal */}
+      {editBalanceModal.isOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-800 rounded-xl p-6 max-w-md w-full border border-gray-700">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-white">Bakiye Düzenle</h3>
+              <button
+                onClick={closeBalanceEditModal}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="mb-6">
+              <div className="bg-gray-700/50 rounded-lg p-4 mb-4">
+                <p className="text-gray-400 text-sm mb-1">Mevcut Bakiye</p>
+                <p className="text-2xl font-bold text-white">
+                  ${editBalanceModal.currentBalance.toFixed(2)}
+                </p>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    İşlem Türü
+                  </label>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setEditBalanceModal(prev => ({ ...prev, operation: 'add' }))}
+                      className={`flex-1 px-3 py-2 rounded-lg border transition-colors ${
+                        editBalanceModal.operation === 'add'
+                          ? 'bg-green-600/20 border-green-500 text-green-400'
+                          : 'bg-gray-700 border-gray-600 text-gray-300'
+                      }`}
+                    >
+                      <Plus className="h-4 w-4 mx-auto" />
+                      Ekle
+                    </button>
+                    <button
+                      onClick={() => setEditBalanceModal(prev => ({ ...prev, operation: 'subtract' }))}
+                      className={`flex-1 px-3 py-2 rounded-lg border transition-colors ${
+                        editBalanceModal.operation === 'subtract'
+                          ? 'bg-red-600/20 border-red-500 text-red-400'
+                          : 'bg-gray-700 border-gray-600 text-gray-300'
+                      }`}
+                    >
+                      <Minus className="h-4 w-4 mx-auto" />
+                      Çıkar
+                    </button>
+                    <button
+                      onClick={() => setEditBalanceModal(prev => ({ ...prev, operation: 'set' }))}
+                      className={`flex-1 px-3 py-2 rounded-lg border transition-colors ${
+                        editBalanceModal.operation === 'set'
+                          ? 'bg-blue-600/20 border-blue-500 text-blue-400'
+                          : 'bg-gray-700 border-gray-600 text-gray-300'
+                      }`}
+                    >
+                      <Edit className="h-4 w-4 mx-auto" />
+                      Ayarla
+                    </button>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Miktar (USD)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editBalanceModal.newBalance}
+                    onChange={(e) => setEditBalanceModal(prev => ({ ...prev, newBalance: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="0.00"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Açıklama (İsteğe Bağlı)
+                  </label>
+                  <input
+                    type="text"
+                    value={editBalanceModal.reason}
+                    onChange={(e) => setEditBalanceModal(prev => ({ ...prev, reason: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="İşlem açıklaması..."
+                  />
+                </div>
+              </div>
+              
+              {editBalanceModal.newBalance && (
+                <div className="mt-4 p-3 bg-blue-600/20 border border-blue-500/30 rounded-lg">
+                  <p className="text-blue-400 text-sm">
+                    Yeni Bakiye: $
+                    {editBalanceModal.operation === 'add' 
+                      ? (editBalanceModal.currentBalance + parseFloat(editBalanceModal.newBalance || '0')).toFixed(2)
+                      : editBalanceModal.operation === 'subtract'
+                      ? Math.max(0, editBalanceModal.currentBalance - parseFloat(editBalanceModal.newBalance || '0')).toFixed(2)
+                      : parseFloat(editBalanceModal.newBalance || '0').toFixed(2)
+                    }
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={closeBalanceEditModal}
+                className="flex-1 py-3 px-4 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-medium transition-colors"
+              >
+                İptal
+              </button>
+              <button
+                onClick={handleBalanceUpdate}
+                disabled={!editBalanceModal.newBalance || loading}
+                className="flex-1 py-3 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                {loading ? 'Güncelleniyor...' : 'Güncelle'}
+              </button>
+            </div>
           </div>
         </div>
       )}

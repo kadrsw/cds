@@ -6,29 +6,51 @@ export interface MiningCalculation {
 }
 
 export interface User {
-  id: string;
+  uid: string;
   isBanned?: boolean;
   activePackage?: string;
+  packageExpiresAt?: string;
   trialEndDate?: string | Date;
   totalTrialEarnings?: number;
+  balance?: number;
 }
 
+// Paket tanımlamaları - useMining.ts ile senkron
+export const PACKAGES = {
+  starter: {
+    hashRate: 61920, // 61.92 TH/s
+    dailyEarning: 2.99,
+    hourlyEarning: 2.99 / 24
+  },
+  professional: {
+    hashRate: 187010, // 187.01 TH/s  
+    dailyEarning: 9.03,
+    hourlyEarning: 9.03 / 24
+  },
+  enterprise: {
+    hashRate: 312100, // 312.10 TH/s
+    dailyEarning: 18.08,
+    hourlyEarning: 18.08 / 24
+  }
+};
+
 export const getPackageMultipliers = (packageId?: string): MiningCalculation => {
+  // Bu fonksiyon artık kullanılmıyor, direkt paket değerleri kullanılıyor
   const multipliers: Record<string, MiningCalculation> = {
     starter: {
-      hashRateMultiplier: 2.5,
-      earningMultiplier: 2.0,
-      dailyEarningBonus: 3.5
+      hashRateMultiplier: 61.92,
+      earningMultiplier: 2.99 / 0.278, // Günlük kazanç / trial günlük kazanç
+      dailyEarningBonus: 2.99
     },
     professional: {
-      hashRateMultiplier: 4.0,
-      earningMultiplier: 3.5,
-      dailyEarningBonus: 12.0
+      hashRateMultiplier: 187.01,
+      earningMultiplier: 9.03 / 0.278,
+      dailyEarningBonus: 9.03
     },
     enterprise: {
-      hashRateMultiplier: 6.0,
-      earningMultiplier: 5.0,
-      dailyEarningBonus: 25.0
+      hashRateMultiplier: 312.10,
+      earningMultiplier: 18.08 / 0.278,
+      dailyEarningBonus: 18.08
     }
   };
 
@@ -55,26 +77,34 @@ export const calculateMiningEarnings = (
   // Maksimum süre kontrolü (24 saat)
   const clampedElapsedHours = Math.min(elapsedHours, 24);
   
-  const multipliers = getPackageMultipliers(packageId);
-  const hashRateRatio = hashRate / baseHashRate;
-  
-  // Maksimum multiplier kontrolü
-  const maxMultiplier = packageId ? 10 : 1; // Premium paketler için max 10x, trial için 1x
-  const effectiveMultiplier = Math.min(multipliers.earningMultiplier, maxMultiplier);
-  
-  const hourlyEarning = baseEarning * hashRateRatio * effectiveMultiplier;
-  
-  // Sonuç kontrolü
-  const result = hourlyEarning * clampedElapsedHours;
-  
-  // Makul olmayan kazanç kontrolü
-  const maxReasonableEarning = baseEarning * 10 * clampedElapsedHours;
-  if (result > maxReasonableEarning) {
-    console.warn('Calculated earnings exceed reasonable limits');
-    return maxReasonableEarning;
+  // DÜZELTME: Paket varsa direkt paket kazancını kullan
+  if (packageId && PACKAGES[packageId as keyof typeof PACKAGES]) {
+    const packageData = PACKAGES[packageId as keyof typeof PACKAGES];
+    const hourlyEarning = packageData.hourlyEarning;
+    const totalEarnings = hourlyEarning * clampedElapsedHours;
+    
+    // Makul olmayan kazanç kontrolü
+    const maxReasonableEarning = packageData.dailyEarning * 2; // Günlük kazancın 2 katından fazla olamaz
+    if (totalEarnings > maxReasonableEarning) {
+      console.warn('Calculated earnings exceed reasonable limits');
+      return maxReasonableEarning;
+    }
+    
+    return Math.max(0, totalEarnings);
   }
   
-  return Math.max(0, result);
+  // Trial kullanıcılar için standart hesaplama
+  const hourlyEarning = baseEarning;
+  const totalEarnings = hourlyEarning * clampedElapsedHours;
+  
+  // Trial için maksimum kazanç kontrolü
+  const maxTrialEarning = baseEarning * 10 * clampedElapsedHours;
+  if (totalEarnings > maxTrialEarning) {
+    console.warn('Trial earnings exceed limits');
+    return maxTrialEarning;
+  }
+  
+  return Math.max(0, totalEarnings);
 };
 
 export const calculateHashRate = (baseHashRate: number, packageId?: string): number => {
@@ -83,16 +113,14 @@ export const calculateHashRate = (baseHashRate: number, packageId?: string): num
     return 1000; // Default hash rate
   }
   
-  // GÜVENLİK: Sadece onaylanmış paketler için hash rate artışı
-  if (!packageId) {
-    // Paket yoksa sadece base hash rate
-    return baseHashRate;
+  // DÜZELTME: Paket varsa paket hash rate'ini kullan
+  if (packageId && PACKAGES[packageId as keyof typeof PACKAGES]) {
+    const packageData = PACKAGES[packageId as keyof typeof PACKAGES];
+    return packageData.hashRate;
   }
   
-  const multipliers = getPackageMultipliers(packageId);
-  const result = Math.floor(baseHashRate * multipliers.hashRateMultiplier);
-  
-  return Math.max(baseHashRate, result);
+  // Paket yoksa base hash rate döndür
+  return baseHashRate;
 };
 
 export const canUserMine = (user: User | null | undefined): boolean => {
@@ -101,36 +129,42 @@ export const canUserMine = (user: User | null | undefined): boolean => {
   // Ban kontrolü
   if (user.isBanned) return false;
   
-  // Check if user has active package and it hasn't expired
+  // Paket kontrolü
   if (user.activePackage) {
-    if ((user as any).packageExpiresAt) {
-      const packageExpiry = new Date((user as any).packageExpiresAt);
+    // Paket süresi kontrolü
+    if (user.packageExpiresAt) {
+      const packageExpiry = new Date(user.packageExpiresAt);
       const now = new Date();
       if (now > packageExpiry) {
-        return false; // Package expired
+        return false; // Paket süresi dolmuş
       }
     }
-    return true;
+    return true; // Aktif paketi var ve süresi dolmamış
   }
   
-  // Check trial status
+  // Trial kontrolü
   const trialEndDate = user.trialEndDate ? new Date(user.trialEndDate) : null;
   const now = new Date();
   const trialActive = trialEndDate && now < trialEndDate;
-  const earningsWithinLimit = (user.totalTrialEarnings || 0) < 25.0; // Kesin $25 limit
+  const earningsWithinLimit = (user.totalTrialEarnings || 0) < 25.0;
   
-  return trialActive && earningsWithinLimit;
+  return !!(trialActive && earningsWithinLimit);
 };
 
 export const formatHashRate = (hashRate: number): string => {
-  if (hashRate <= 0) return '0H/s';
+  if (hashRate <= 0) return '0 H/s';
   
-  if (hashRate >= 1000000) {
-    return `${(hashRate / 1000000).toFixed(1)}MH/s`;
+  // TH/s cinsinden gösterim için
+  if (hashRate >= 1000000000000) {
+    return `${(hashRate / 1000000000000).toFixed(2)} TH/s`;
+  } else if (hashRate >= 1000000000) {
+    return `${(hashRate / 1000000000).toFixed(2)} GH/s`;
+  } else if (hashRate >= 1000000) {
+    return `${(hashRate / 1000000).toFixed(2)} MH/s`;
   } else if (hashRate >= 1000) {
-    return `${(hashRate / 1000).toFixed(1)}KH/s`;
+    return `${(hashRate / 1000).toFixed(2)} KH/s`;
   }
-  return `${hashRate}H/s`;
+  return `${hashRate} H/s`;
 };
 
 // Yardımcı fonksiyonlar
@@ -152,6 +186,16 @@ export const getMaxTrialEarnings = (): number => {
 
 export const getMaxDailyHours = (): number => {
   return 24;
+};
+
+export const getPackageDailyEarning = (packageId: string): number => {
+  const packageData = PACKAGES[packageId as keyof typeof PACKAGES];
+  return packageData ? packageData.dailyEarning : 0;
+};
+
+export const getPackageHashRate = (packageId: string): number => {
+  const packageData = PACKAGES[packageId as keyof typeof PACKAGES];
+  return packageData ? packageData.hashRate : 1000;
 };
 
 export const generateDeviceFingerprint = async (): Promise<string> => {
@@ -211,6 +255,6 @@ export const generateReferralCode = (userId: string): string => {
 };
 
 export const calculateReferralBonus = (amount: number): number => {
-  // Calculate 20% referral bonus
+  // %20 referans bonusu hesapla
   return amount * 0.2;
 };

@@ -47,8 +47,8 @@ export const useMining = () => {
   const [activeSessions, setActiveSessions] = useState<MiningSession[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const earningsIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const lastUpdateRef = useRef<number>(0);
-  const sessionStartRef = useRef<{ [key: string]: number }>({});
+  const lastUpdateTimeRef = useRef<number>(0);
+  const lastBalanceRef = useRef<number>(0);
 
   const coins: Coin[] = [
     { 
@@ -57,7 +57,7 @@ export const useMining = () => {
       symbol: 'BTC', 
       icon: '₿', 
       baseHashRate: 1000, 
-      baseEarning: 0.0092, // Trial için saatlik kazanç
+      baseEarning: 0.00347, // Trial için saatlik kazanç ($0.0833/24 saat)
       color: '#F7931A',
       description: 'The first and most valuable cryptocurrency',
       marketCap: '$1.2T',
@@ -69,7 +69,7 @@ export const useMining = () => {
       symbol: 'ETH', 
       icon: 'Ξ', 
       baseHashRate: 1000, 
-      baseEarning: 0.0092,
+      baseEarning: 0.00347,
       color: '#627EEA',
       description: 'Smart contract platform and DeFi leader',
       marketCap: '$400B',
@@ -81,7 +81,7 @@ export const useMining = () => {
       symbol: 'DOGE', 
       icon: 'Ð', 
       baseHashRate: 1000, 
-      baseEarning: 0.0092,
+      baseEarning: 0.00347,
       color: '#C2A633',
       description: 'The meme coin that became mainstream',
       marketCap: '$25B',
@@ -93,7 +93,7 @@ export const useMining = () => {
       symbol: 'LTC', 
       icon: 'Ł', 
       baseHashRate: 1000, 
-      baseEarning: 0.0092,
+      baseEarning: 0.00347,
       color: '#BFBBBB',
       description: 'Digital silver to Bitcoin\'s gold',
       marketCap: '$8B',
@@ -105,7 +105,7 @@ export const useMining = () => {
       symbol: 'ADA',
       icon: '₳',
       baseHashRate: 1000,
-      baseEarning: 0.0092,
+      baseEarning: 0.00347,
       color: '#0033AD',
       description: 'Sustainable blockchain platform',
       marketCap: '$15B',
@@ -117,7 +117,7 @@ export const useMining = () => {
       symbol: 'DOT',
       icon: '●',
       baseHashRate: 1000,
-      baseEarning: 0.0092,
+      baseEarning: 0.00347,
       color: '#E6007A',
       description: 'Multi-chain interoperability protocol',
       marketCap: '$12B',
@@ -129,7 +129,7 @@ export const useMining = () => {
       symbol: 'SOL',
       icon: '◎',
       baseHashRate: 1000,
-      baseEarning: 0.0092,
+      baseEarning: 0.00347,
       color: '#9945FF',
       description: 'High-performance blockchain',
       marketCap: '$45B',
@@ -141,7 +141,7 @@ export const useMining = () => {
       symbol: 'MATIC',
       icon: '⬟',
       baseHashRate: 1000,
-      baseEarning: 0.0092,
+      baseEarning: 0.00347,
       color: '#8247E5',
       description: 'Ethereum scaling solution',
       marketCap: '$8B',
@@ -162,29 +162,28 @@ export const useMining = () => {
         }));
         const activeSessions = sessions.filter(s => s.isActive);
         
-        // Güvenlik kontrolü: Aynı anda birden fazla aktif session varsa hepsini durdur
+        // Birden fazla aktif session varsa sadece en yeniyi bırak
         if (activeSessions.length > 1) {
-          console.warn('Multiple active sessions detected, stopping all');
-          activeSessions.forEach(session => {
+          const sortedSessions = activeSessions.sort((a, b) => 
+            new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+          );
+          
+          // En yeni hariç diğerlerini kapat
+          for (let i = 1; i < sortedSessions.length; i++) {
+            const session = sortedSessions[i];
             set(ref(database, `miningSessions/${user.uid}/${session.id}`), {
               ...session,
               isActive: false,
-              endTime: new Date().toISOString()
+              endTime: new Date().toISOString(),
+              autoStopped: true,
+              stopReason: 'Duplicate session'
             });
-          });
-          setActiveSessions([]);
-          toast.error('Güvenlik nedeniyle tüm mining oturumları durduruldu');
-          return;
-        }
-        
-        // Session başlangıç zamanlarını kaydet
-        activeSessions.forEach(session => {
-          if (!sessionStartRef.current[session.id]) {
-            sessionStartRef.current[session.id] = new Date(session.startTime).getTime();
           }
-        });
-        
-        setActiveSessions(activeSessions);
+          
+          setActiveSessions([sortedSessions[0]]);
+        } else {
+          setActiveSessions(activeSessions);
+        }
       } else {
         setActiveSessions([]);
       }
@@ -193,165 +192,146 @@ export const useMining = () => {
     return () => unsubscribe();
   }, [user]);
 
-  // DÜZELTME: Kazanç güncelleme mantığı
+  // Kazanç güncelleme mantığı - DÜZELTME
   useEffect(() => {
     if (!user || activeSessions.length === 0) {
       if (earningsIntervalRef.current) {
         clearInterval(earningsIntervalRef.current);
         earningsIntervalRef.current = null;
       }
-      lastUpdateRef.current = 0;
       return;
     }
 
+    // Kullanıcının mevcut bakiyesini kaydet
+    lastBalanceRef.current = user.balance || 0;
+
     const updateEarnings = async () => {
       const activeSession = activeSessions[0];
-      if (!activeSession) return;
+      if (!activeSession || !activeSession.isActive) return;
 
       const now = Date.now();
       
-      // Minimum güncelleme aralığı 5 saniye
-      if (lastUpdateRef.current > 0 && (now - lastUpdateRef.current) < 5000) {
+      // Son güncelleme kontrolü - minimum 5 saniye
+      if (lastUpdateTimeRef.current > 0 && (now - lastUpdateTimeRef.current) < 5000) {
         return;
       }
 
       try {
-        // Session başlangıç zamanı kontrolü
-        const sessionStart = sessionStartRef.current[activeSession.id];
-        const dbSessionStart = new Date(activeSession.startTime).getTime();
-        
-        if (sessionStart && Math.abs(sessionStart - dbSessionStart) > 60000) {
-          console.warn('Session start time mismatch detected');
-          await stopMining(activeSession.id);
-          toast.error('Güvenlik nedeniyle mining durduruldu');
-          return;
-        }
-
-        // Paket süresi kontrolü
-        if (user.activePackage && user.packageExpiresAt) {
-          const packageExpiry = new Date(user.packageExpiresAt);
-          if (now > packageExpiry.getTime()) {
-            console.log('Package expired, stopping mining');
-            await stopMining(activeSession.id, 'Package expired');
-            return;
-          }
-        }
-
         const coin = coins.find(c => c.id === activeSession.coin);
         if (!coin) return;
 
-        const start = new Date(activeSession.startTime).getTime();
-        const elapsedHours = (now - start) / (1000 * 60 * 60);
-        
+        const sessionStartTime = new Date(activeSession.startTime).getTime();
+        const elapsedSeconds = (now - sessionStartTime) / 1000;
+        const elapsedHours = elapsedSeconds / 3600;
+
         // Maksimum 24 saat kontrolü
         if (elapsedHours > 24) {
-          console.warn('Mining session exceeded maximum duration');
-          await stopMining(activeSession.id);
-          toast.error('Mining oturumu maksimum süreyi aştı');
+          await stopMining(activeSession.id, 'Maximum duration exceeded');
           return;
         }
 
-        // DÜZELTME: Paket bazlı kazanç hesaplama
-        let hourlyEarning = coin.baseEarning; // Varsayılan: trial kazancı
+        // Saatlik kazanç hesaplama
+        let hourlyEarning = coin.baseEarning; // Varsayılan trial kazancı
         
         if (user.activePackage && packages[user.activePackage]) {
           const userPackage = packages[user.activePackage];
-          // Paket bazlı günlük kazancı saatlik kazanca çevir
+          // Paket günlük kazancını saatlik kazanca çevir
           hourlyEarning = userPackage.dailyEarning / 24;
         }
 
-        // Toplam kazanç hesaplama
-        const totalEarnings = hourlyEarning * elapsedHours;
+        // Toplam kazanç = saatlik kazanç * geçen saat
+        const totalEarnings = parseFloat((hourlyEarning * elapsedHours).toFixed(6));
         
-        // Makul kazanç kontrolü
-        const maxPossibleEarning = hourlyEarning * 10 * elapsedHours;
-        if (totalEarnings > maxPossibleEarning) {
-          console.warn('Unrealistic earnings detected');
-          await stopMining(activeSession.id);
-          toast.error('Anormal kazanç tespit edildi');
-          return;
-        }
-
-        // Önceki kazançtan düşük olamaz
+        // Session'daki önceki kazançtan düşük olamaz
         if (totalEarnings < activeSession.totalEarned) {
-          console.warn('Earnings decreased, possible manipulation');
+          console.warn('Earnings cannot decrease');
           return;
         }
 
-        // Trial limitleri kontrolü
+        // Yeni kazanç miktarı
+        const earningsDifference = totalEarnings - activeSession.totalEarned;
+
+        // Trial kontrolü
         if (!user.activePackage) {
-          const newTrialEarnings = (user.totalTrialEarnings || 0) + (totalEarnings - activeSession.totalEarned);
-          if (newTrialEarnings >= 25) {
+          const currentTrialEarnings = user.totalTrialEarnings || 0;
+          const newTrialTotal = currentTrialEarnings + earningsDifference;
+          
+          // Trial limiti kontrolü
+          if (newTrialTotal >= 25) {
+            // Tam 25'e tamamla ve durdur
+            const remainingEarning = 25 - currentTrialEarnings;
+            
+            if (remainingEarning > 0) {
+              // Son kazancı ekle
+              await update(ref(database, `users/${user.uid}`), {
+                balance: (user.balance || 0) + remainingEarning,
+                totalTrialEarnings: 25
+              });
+              
+              // Session'ı güncelle
+              await update(ref(database, `miningSessions/${user.uid}/${activeSession.id}`), {
+                totalEarned: activeSession.totalEarned + remainingEarning,
+                lastUpdated: new Date().toISOString()
+              });
+            }
+            
+            // Madenciliği durdur
             await stopMining(activeSession.id, 'Trial limit reached');
-            toast.error('Trial earning limit reached! Please upgrade to continue mining.');
+            toast.error('Trial earning limit ($25) reached! Please upgrade to continue.');
             return;
           }
           
           // Trial süresi kontrolü
-          if (user.trialEndDate) {
-            const trialEnd = new Date(user.trialEndDate);
-            if (now > trialEnd.getTime()) {
-              await stopMining(activeSession.id, 'Trial period expired');
-              toast.error('Trial period expired! Please upgrade to continue mining.');
-              return;
-            }
+          if (user.trialEndDate && now > new Date(user.trialEndDate).getTime()) {
+            await stopMining(activeSession.id, 'Trial period expired');
+            toast.error('Trial period expired! Please upgrade to continue.');
+            return;
           }
         }
 
-        // DÜZELTME: Session ve kullanıcı bakiyesini güncelle
-        const earningsDifference = totalEarnings - activeSession.totalEarned;
-        
-        if (earningsDifference > 0) {
-          // Çok büyük artış kontrolü
-          const maxIncrease = hourlyEarning * 0.5; // 30 saniyede maksimum artış
-          if (earningsDifference > maxIncrease) {
-            console.warn('Earnings increase too large');
+        // Paket süresi kontrolü
+        if (user.activePackage && user.packageExpiresAt) {
+          if (now > new Date(user.packageExpiresAt).getTime()) {
+            await stopMining(activeSession.id, 'Package expired');
+            toast.error('Package expired! Please renew to continue mining.');
             return;
           }
+        }
 
+        // Kazanç güncellemesi yap
+        if (earningsDifference > 0.000001) { // Çok küçük değişiklikleri yoksay
           // Session'ı güncelle
-          const sessionRef = ref(database, `miningSessions/${user.uid}/${activeSession.id}`);
-          await update(sessionRef, {
+          await update(ref(database, `miningSessions/${user.uid}/${activeSession.id}`), {
             totalEarned: totalEarnings,
             lastUpdated: new Date().toISOString()
           });
 
           // Kullanıcı bakiyesini güncelle
-          const userRef = ref(database, `users/${user.uid}`);
-          const userSnapshot = await get(userRef);
-          
-          if (userSnapshot.exists()) {
-            const userData = userSnapshot.val();
-            const updates: any = {
-              balance: (userData.balance || 0) + earningsDifference
-            };
+          const updates: any = {
+            balance: (user.balance || 0) + earningsDifference
+          };
 
-            // Trial kullanıcısı ise trial earnings'i de güncelle
-            if (!user.activePackage) {
-              updates.totalTrialEarnings = (userData.totalTrialEarnings || 0) + earningsDifference;
-            }
-
-            await update(userRef, updates);
-            
-            // Local state'i güncelle
-            await updateUserData({
-              balance: updates.balance,
-              ...(updates.totalTrialEarnings && { totalTrialEarnings: updates.totalTrialEarnings })
-            });
+          // Trial ise trial earnings'i de güncelle
+          if (!user.activePackage) {
+            updates.totalTrialEarnings = (user.totalTrialEarnings || 0) + earningsDifference;
           }
+
+          await update(ref(database, `users/${user.uid}`), updates);
+          
+          // Local state güncelle
+          lastBalanceRef.current = updates.balance;
+          lastUpdateTimeRef.current = now;
         }
-        
-        lastUpdateRef.current = now;
       } catch (error) {
         console.error('Error updating earnings:', error);
       }
     };
 
-    // İlk güncelleme hemen yapılsın
-    updateEarnings();
+    // İlk güncelleme 3 saniye sonra
+    setTimeout(updateEarnings, 3000);
     
-    // DÜZELTME: Daha sık güncelleme (10 saniyede bir)
-    earningsIntervalRef.current = setInterval(updateEarnings, 10000);
+    // Sonraki güncellemeler 15 saniyede bir
+    earningsIntervalRef.current = setInterval(updateEarnings, 15000);
 
     return () => {
       if (earningsIntervalRef.current) {
@@ -366,43 +346,35 @@ export const useMining = () => {
 
     // Ban kontrolü
     if (user.isBanned) {
-      toast.error(`Hesabınız banlanmıştır. Sebep: ${user.banReason || 'Güvenlik ihlali'}`);
+      toast.error(`Account banned. Reason: ${user.banReason || 'Security violation'}`);
       return;
     }
 
     if (!canUserMine(user)) {
-      toast.error('Mining not available. Please check your trial status or upgrade your package.');
+      toast.error('Mining not available. Please check your trial status or upgrade.');
       return;
     }
     
-    // Çok sık başlatma engelleme
-    const now = Date.now();
-    if (lastUpdateRef.current > 0 && (now - lastUpdateRef.current) < 10000) {
-      toast.error('Lütfen 10 saniye bekleyin');
-      return;
-    }
-
     setIsLoading(true);
     try {
-      // Diğer aktif session'ları durdur
-      const stopPromises = activeSessions.map(session => 
-        set(ref(database, `miningSessions/${user.uid}/${session.id}`), {
+      // Mevcut aktif session'ları kapat
+      for (const session of activeSessions) {
+        await set(ref(database, `miningSessions/${user.uid}/${session.id}`), {
           ...session,
           isActive: false,
           endTime: new Date().toISOString()
-        })
-      );
-      await Promise.all(stopPromises);
+        });
+      }
 
       const coin = coins.find(c => c.id === coinId);
       if (!coin) {
         toast.error('Invalid coin selected');
+        setIsLoading(false);
         return;
       }
 
-      // DÜZELTME: Paket bazlı hash rate hesaplama
+      // Hash rate hesaplama
       let hashRate = coin.baseHashRate;
-      
       if (user.activePackage && packages[user.activePackage]) {
         const userPackage = packages[user.activePackage];
         hashRate = userPackage.hashRate;
@@ -416,23 +388,16 @@ export const useMining = () => {
         hashRate,
         totalEarned: 0,
         isActive: true,
-        ...(user.activePackage && { packageId: user.activePackage }),
+        packageId: user.activePackage || null,
         lastUpdated: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        userAgent: navigator.userAgent.substring(0, 100)
+        createdAt: new Date().toISOString()
       };
 
       const sessionsRef = ref(database, `miningSessions/${user.uid}`);
-      const newSessionRef = await push(sessionsRef, newSession);
+      await push(sessionsRef, newSession);
       
-      // Session ID'yi kaydet
-      if (newSessionRef.key) {
-        sessionStartRef.current[newSessionRef.key] = now;
-      }
-      
-      toast.success(`${coin.name} mining started successfully!`);
-      lastUpdateRef.current = now;
-
+      toast.success(`${coin.name} mining started!`);
+      lastUpdateTimeRef.current = Date.now();
     } catch (error) {
       console.error('Error starting mining:', error);
       toast.error('Failed to start mining');
@@ -448,7 +413,6 @@ export const useMining = () => {
       const session = activeSessions.find(s => s.id === sessionId);
       if (!session) {
         setIsLoading(false);
-        toast.error('Mining session not found');
         return;
       }
 
@@ -459,16 +423,12 @@ export const useMining = () => {
         isActive: false,
         endTime: new Date().toISOString(),
         autoStopped: !!reason,
-        ...(reason && { stopReason: reason })
+        stopReason: reason || 'Manual stop'
       });
       
-      // Session referansını temizle
-      delete sessionStartRef.current[sessionId];
-
       if (!reason) {
-        toast.success(`${coin?.name || 'Mining'} stopped successfully!`);
+        toast.success(`${coin?.name || 'Mining'} stopped!`);
       }
-
     } catch (error) {
       console.error('Error stopping mining:', error);
       toast.error('Failed to stop mining');

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ref, push, onValue } from 'firebase/database';
 import { database } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
+import { useLanguage } from '../hooks/useLanguage';
 import { WithdrawalRequest } from '../types';
 import { DollarSign, Clock, Check, X } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -9,6 +10,7 @@ import { format } from 'date-fns';
 
 export const WithdrawalPage: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [amount, setAmount] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
   const [loading, setLoading] = useState(false);
@@ -117,8 +119,8 @@ export const WithdrawalPage: React.FC = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Para Çekme</h1>
-        <p className="text-gray-400">Kazançlarınızı çekme talebi gönderin</p>
+        <h1 className="text-3xl font-bold text-white mb-2">{t('withdrawal')}</h1>
+        <p className="text-gray-400">{t('withdrawal')}</p>
       </div>
 
       {/* Balance Info */}

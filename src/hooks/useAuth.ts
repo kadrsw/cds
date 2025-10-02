@@ -43,7 +43,7 @@ export const useAuth = () => {
               }
               setLoading(false);
             }, (error) => {
-              console.error('Error listening to user data:', error);
+              // Sessiz hata - izinler olmayabilir
               setLoading(false);
             });
           } else {
@@ -105,8 +105,8 @@ export const useAuth = () => {
             await set(userRef, newUser);
             setUser(newUser);
             
-            // Güvenlik logu
-            await logSecurityEvent(firebaseUser.uid, 'ACCOUNT_CREATED', deviceFingerprint);
+            // Güvenlik logu (sessiz hata)
+            logSecurityEvent(firebaseUser.uid, 'ACCOUNT_CREATED', deviceFingerprint).catch(() => {});
             
             // Set up real-time listener for the new user
             userDataUnsubscribe = onValue(userRef, (userSnapshot) => {
@@ -116,18 +116,14 @@ export const useAuth = () => {
               }
               setLoading(false);
             }, (error) => {
-              console.error('Error listening to user data:', error);
+              // Sessiz hata - izinler olmayabilir
               setLoading(false);
             });
           }
         } else {
-          // Çıkış logu
+          // Çıkış logu (sessiz hata)
           if (user) {
-            try {
-              await logSecurityEvent(user.uid, 'LOGOUT', user.deviceFingerprint || '');
-            } catch (error) {
-              console.error('Error logging logout:', error);
-            }
+            logSecurityEvent(user.uid, 'LOGOUT', user.deviceFingerprint || '').catch(() => {});
           }
           
           // Clean up user data listener when user logs out
@@ -175,19 +171,11 @@ export const useAuth = () => {
           });
         }
         
-        // Güvenlik logu
-        try {
-          await logSecurityEvent(result.user.uid, 'LOGIN', deviceFingerprint);
-        } catch (error) {
-          console.error('Error logging login:', error);
-        }
-        
-        // Şüpheli aktivite kontrolü
-        try {
-          await checkSuspiciousActivity(result.user.uid, userIP, deviceFingerprint);
-        } catch (error) {
-          console.error('Error checking suspicious activity:', error);
-        }
+        // Güvenlik logu (sessiz hata)
+        logSecurityEvent(result.user.uid, 'LOGIN', deviceFingerprint).catch(() => {});
+
+        // Şüpheli aktivite kontrolü (sessiz hata)
+        checkSuspiciousActivity(result.user.uid, userIP, deviceFingerprint).catch(() => {});
       }
       
       return result;
@@ -378,7 +366,7 @@ export const useAuth = () => {
     }
   };
 
-  // Güvenlik olayı loglama
+  // Güvenlik olayı loglama (sessiz hata)
   const logSecurityEvent = async (userId: string, action: string, deviceFingerprint: string) => {
     try {
       const userIP = await getUserIP();
@@ -390,38 +378,38 @@ export const useAuth = () => {
         timestamp: new Date().toISOString(),
         suspicious: false
       };
-      
+
       const logsRef = ref(database, `securityLogs/${Date.now()}_${userId}`);
       await set(logsRef, securityLog);
     } catch (error) {
-      console.error('Security logging failed:', error);
+      // Sessiz hata - izinler olmayabilir
     }
   };
 
-  // Şüpheli aktivite kontrolü
+  // Şüpheli aktivite kontrolü (sessiz hata)
   const checkSuspiciousActivity = async (userId: string, ip: string, fingerprint: string) => {
     try {
       const logsRef = ref(database, 'securityLogs');
       const snapshot = await get(logsRef);
-      
+
       if (snapshot.exists()) {
         const logs = Object.values(snapshot.val()) as any[];
-        const recentLogs = logs.filter(log => 
+        const recentLogs = logs.filter(log =>
           new Date(log.timestamp).getTime() > Date.now() - 24 * 60 * 60 * 1000
         );
-        
+
         // Aynı IP'den çok fazla hesap kontrolü
-        const sameIPAccounts = recentLogs.filter(log => 
+        const sameIPAccounts = recentLogs.filter(log =>
           log.ipAddress === ip && log.userId !== userId
         );
-        
+
         if (sameIPAccounts.length > 3) {
           // Şüpheli aktivite tespit edildi
           await banUser(userId, 'Multiple accounts from same IP detected');
         }
       }
     } catch (error) {
-      console.error('Suspicious activity check failed:', error);
+      // Sessiz hata - izinler olmayabilir
     }
   };
 

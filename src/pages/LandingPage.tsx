@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
 import { LanguageSelector } from '../components/LanguageSelector';
+import { SEOHead } from '../components/SEOHead';
 import { Pickaxe, Shield, Zap, DollarSign, Target, RotateCcw, Smartphone, AlertTriangle, Lock, Users, CheckCircle, Server, Cpu } from 'lucide-react';
 import { SecurityBanner } from '../components/SecurityBanner';
 
@@ -11,95 +12,6 @@ export const LandingPage: React.FC = () => {
   const { t } = useLanguage();
 
   useEffect(() => {
-    // Enhanced SEO Meta Tags based on competitor analysis
-    document.title = "Donanım Olmadan Bitcoin Madenciliği | FreeCloudMiner - Hash Gücü Kiralama ile Bitcoin Kazan";
-    
-    // Meta description - Competitor optimized
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 
-        'Donanım olmadan Bitcoin madenciliği! Hash gücü kiralama ile günlük Bitcoin kazan. Bulut madencilik Türkiye platformu. ASIC alternatifi, teknik bilgi gerektirmez. Pasif gelir kripto madenciliği ile günlük ödeme!'
-      );
-    }
-
-    // Enhanced keywords based on competitor research
-    let metaKeywords = document.querySelector('meta[name="keywords"]');
-    if (!metaKeywords) {
-      metaKeywords = document.createElement('meta');
-      metaKeywords.setAttribute('name', 'keywords');
-      document.head.appendChild(metaKeywords);
-    }
-    metaKeywords.setAttribute('content', 
-      'donanım olmadan bitcoin madenciliği, hash gücü kiralama, bitcoin kazan, bulut madencilik türkiye, pasif gelir kripto, kripto para kazanma, ASIC alternatifi, teknik bilgi gerektirmez, günlük bitcoin ödemesi, mobil bitcoin madenciliği, crypto cloud mining, bitcoin mining pool, bulut madencilik platform, kripto madencilik havuzu'
-    );
-
-    // Open Graph meta tags - SEO focused
-    const addOGMeta = (property: string, content: string) => {
-      let meta = document.querySelector(`meta[property="${property}"]`);
-      if (!meta) {
-        meta = document.createElement('meta');
-        meta.setAttribute('property', property);
-        document.head.appendChild(meta);
-      }
-      meta.setAttribute('content', content);
-    };
-
-    addOGMeta('og:title', 'Donanım Olmadan Bitcoin Madenciliği - Hash Gücü Kiralama | FreeCloudMiner');
-    addOGMeta('og:description', 'Bitcoin kazan! Donanım olmadan bulut madencilik. Hash gücü kiralama ile günlük pasif gelir.');
-    addOGMeta('og:type', 'website');
-    addOGMeta('og:url', 'https://www.freecloudminer.com');
-    addOGMeta('og:image', 'https://www.freecloudminer.com/og-image.jpg');
-
-    // Canonical URL
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonical);
-    }
-    canonical.setAttribute('href', 'https://www.freecloudminer.com');
-
-    // Enhanced Schema.org for cloud mining SEO
-    const schemaScript = document.createElement('script');
-    schemaScript.type = 'application/ld+json';
-    schemaScript.innerHTML = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "FreeCloudMiner",
-      "description": "Donanım olmadan Bitcoin madenciliği platformu - Hash gücü kiralama ile günlük Bitcoin kazanın",
-      "url": "https://www.freecloudminer.com",
-      "logo": "https://www.freecloudminer.com/logo.png",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Berliner Allee 12",
-        "addressLocality": "Düsseldorf",
-        "postalCode": "40212",
-        "addressCountry": "DE"
-      },
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+49-XXX-XXXXXXX",
-        "contactType": "customer service",
-        "email": "freecloudeminer1@gmail.com",
-        "availableLanguage": ["Turkish", "English", "German"]
-      },
-      "sameAs": [
-        "https://twitter.com/FreeCloudMiner",
-        "https://www.linkedin.com/company/freecloudminer"
-      ],
-      "offers": {
-        "@type": "Offer",
-        "name": "Hash Gücü Kiralama - Donanım Olmadan Bitcoin Madenciliği",
-        "description": "$25 ücretsiz bonus ile bulut madencilik başlangıç paketi",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "serviceType": "Bulut Madencilik Hizmeti",
-      "keywords": "donanım olmadan bitcoin madenciliği, hash gücü kiralama, bulut madencilik türkiye"
-    });
-    document.head.appendChild(schemaScript);
-
-    // Scroll effect
     const handleScroll = () => {
       const header = document.querySelector('.landing-header');
       if (header) {
@@ -114,11 +26,8 @@ export const LandingPage: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      // Cleanup schema script
-      const existingSchema = document.querySelector('script[type="application/ld+json"]');
-      if (existingSchema) existingSchema.remove();
     };
-  }, [t]);
+  }, []);
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -157,6 +66,7 @@ export const LandingPage: React.FC = () => {
 
   return (
     <div className="landing-page min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+      <SEOHead />
       {/* Header */}
       <header className="landing-header fixed top-0 w-full z-50 transition-all duration-300 bg-gray-800/95 backdrop-blur-md border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -169,23 +79,23 @@ export const LandingPage: React.FC = () => {
             </div>
             
             <div className="hidden md:flex space-x-8">
-              <a href="/blog" className="text-gray-300 hover:text-white transition-colors">Blog</a>
-              <a href="#özellikler" className="text-gray-300 hover:text-white transition-colors">Özellikler</a>
-              <a href="#madencilik" className="text-gray-300 hover:text-white transition-colors">Madencilik</a>
-              <a href="#paketler" className="text-gray-300 hover:text-white transition-colors">Paketler</a>
-              <a href="#sss" className="text-gray-300 hover:text-white transition-colors">SSS</a>
+              <a href="/blog" className="text-gray-300 hover:text-white transition-colors">{t('blog')}</a>
+              <a href="#özellikler" className="text-gray-300 hover:text-white transition-colors">{t('features')}</a>
+              <a href="#madencilik" className="text-gray-300 hover:text-white transition-colors">{t('mining')}</a>
+              <a href="#paketler" className="text-gray-300 hover:text-white transition-colors">{t('packages2')}</a>
+              <a href="#sss" className="text-gray-300 hover:text-white transition-colors">{t('faq')}</a>
             </div>
             
             <div className="hidden md:block">
               <LanguageSelector />
             </div>
             
-            <Link 
-              to="/auth" 
+            <Link
+              to="/auth"
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition-all transform hover:scale-105"
-              aria-label="Ücretsiz $25 bonus al"
+              aria-label={t('freeBonus')}
             >
-              Ücretsiz $25 Bonus Al
+              {t('freeBonus')}
             </Link>
           </nav>
         </div>
@@ -200,30 +110,29 @@ export const LandingPage: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center">
               <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-white">
-                Donanım Olmadan Bitcoin Madenciliği
+                {t('heroTitle')}
               </h2>
-              
+
               <p className="text-xl md:text-2xl mb-8 text-gray-300 max-w-4xl mx-auto leading-relaxed">
-                Hash gücü kiralama ile Bitcoin kazan! ASIC alternatifi bulut madencilik platformu. 
-                Teknik bilgi gerektirmez, günlük ödemeler, mobil uyumlu. Pasif gelir kripto madenciliği başlayın.
+                {t('heroSubtitle')}
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-                <Link 
-                  to="/auth" 
+                <Link
+                  to="/auth"
                   className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black px-8 py-4 rounded-xl text-xl font-bold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
-                  aria-label="Ücretsiz $25 bonus ile Bitcoin kazanmaya başla"
+                  aria-label={t('freeBonus')}
                 >
                   <span>🎁</span>
-                  <span>Bitcoin Kazan - $25 Bonus</span>
+                  <span>{t('freeBonus')}</span>
                 </Link>
-                
-                <a 
-                  href="#özellikler" 
+
+                <a
+                  href="#özellikler"
                   className="border-2 border-white text-white hover:bg-white hover:text-gray-900 px-8 py-4 rounded-xl text-xl font-semibold transition-all transform hover:scale-105"
-                  aria-label="Donanım olmadan nasıl çalıştığını öğren"
+                  aria-label={t('howItWorks')}
                 >
-                  Nasıl Çalışır?
+                  {t('howItWorks')}
                 </a>
               </div>
               
@@ -254,10 +163,9 @@ export const LandingPage: React.FC = () => {
         <section id="özellikler" className="py-20 bg-black/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Neden Donanım Olmadan Madencilik?</h2>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">{t('whyChooseUs')}</h2>
               <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                ASIC madenci satın almaya gerek yok! Hash gücü kiralama ile pasif gelir kripto madenciliği. 
-                Türkiye'nin en kolay bulut madencilik platformu ile Bitcoin kazanın.
+                {t('heroSubtitle')}
               </p>
             </div>
             
@@ -266,65 +174,59 @@ export const LandingPage: React.FC = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <Server className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">Donanım Yok, Masraf Yok</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">{t('secureTitle')}</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  ASIC madenci cihazı satın almaya gerek yok. Elektrik faturası, soğutma maliyeti, bakım masrafı yok. 
-                  Hash gücü kiralama ile tüm masraflardan kurtulun ve sadece kazancınızı alın.
+                  {t('secureDesc')}
                 </p>
               </article>
-              
+
               <article className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-blue-500/50 transition-all hover:transform hover:scale-105 group">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <Cpu className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">Profesyonel Hash Gücü</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">{t('highPerformanceTitle')}</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  Son teknoloji ASIC madencilerinin gücünden yararlanın. 
-                  Kendi donanımınız olmadan profesyonel madencilik çiftliklerinin hash gücünü kiralayın.
+                  {t('highPerformanceDesc')}
                 </p>
               </article>
-              
+
               <article className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-blue-500/50 transition-all hover:transform hover:scale-105 group">
                 <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <DollarSign className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">Günlük Bitcoin Ödemesi</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">{t('dailyPaymentsTitle')}</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  Her 24 saatte bir otomatik Bitcoin kazancı. Madencilik havuzu karışıklığı yok. 
-                  Doğrudan cüzdanınıza günlük pasif gelir kripto ödemesi alın.
+                  {t('dailyPaymentsDesc')}
                 </p>
               </article>
-              
+
               <article className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-blue-500/50 transition-all hover:transform hover:scale-105 group">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <Target className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">Teknik Bilgi Gerektirmez</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">{t('secureTitle')}</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  Madencilik kurulumu, donanım bilgisi, yazılım ayarları gerekmiyor. 
-                  3 tıkla Bitcoin madenciliği başlatın. Herkes kolayca Bitcoin kazanabilir.
+                  {t('secureDesc')}
                 </p>
               </article>
-              
+
               <article className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-blue-500/50 transition-all hover:transform hover:scale-105 group">
                 <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <RotateCcw className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">Tamamen Otomatik Sistem</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">{t('highPerformanceTitle')}</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  Bir kez başlattıktan sonra hiçbir işlem yapmayın. 
-                  Otomatik hash gücü yönetimi ile 7/24 kesintisiz Bitcoin madenciliği devam eder.
+                  {t('highPerformanceDesc')}
                 </p>
               </article>
-              
+
               <article className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-blue-500/50 transition-all hover:transform hover:scale-105 group">
                 <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-green-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <Smartphone className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">Mobil Bitcoin Madenciliği</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">{t('dailyPaymentsTitle')}</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  Telefonunuzdan Bitcoin madenciliği yapın. Android ve iOS uyumlu. 
-                  İstediğiniz yerden kazançlarınızı takip edin ve para çekin.
+                  {t('dailyPaymentsDesc')}
                 </p>
               </article>
             </div>

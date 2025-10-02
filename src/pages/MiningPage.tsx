@@ -2,11 +2,13 @@
 import React from 'react';
 import { useMining } from '../hooks/useMining';
 import { useAuth } from '../hooks/useAuth';
+import { useLanguage } from '../hooks/useLanguage';
 import { MiningCard } from '../components/MiningCard';
 import { AlertCircle, Zap, Clock, Package as PackageIcon } from 'lucide-react';
 
 export const MiningPage: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { coins, activeSessions, isLoading, startMining, stopMining, canMine } = useMining();
   
   const activeSession = activeSessions[0]; // Only one session can be active at a time
@@ -16,8 +18,8 @@ export const MiningPage: React.FC = () => {
     <div className="space-y-6 pb-20 lg:pb-8">
       {/* Header */}
       <div className="text-center lg:text-left">
-        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Madencilik</h1>
-        <p className="text-gray-400 text-sm md:text-base">Kripto para madenciliği yaparak ödül kazanın</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">{t('mining')}</h1>
+        <p className="text-gray-400 text-sm md:text-base">{t('miningActive')}</p>
       </div>
 
       {/* Mining Unavailable Warning */}
@@ -170,7 +172,7 @@ export const MiningPage: React.FC = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 0.4; }
           50% { opacity: 1; }

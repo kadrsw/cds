@@ -105,14 +105,14 @@ export const AuthPage: React.FC = () => {
       <div className="max-w-md w-full">
         {/* Ana sayfaya dön butonu */}
         <div className="mb-6">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors group"
           >
             <ArrowLeft className="h-4 w-4 group-hover:translate-x-[-2px] transition-transform" />
-            <span>Ana Sayfaya Dön</span>
+            <span>{t('backToHome')}</span>
           </Link>
-          
+
         </div>
         
         <div className="bg-gray-800/50 backdrop-blur-md rounded-2xl p-8 border border-gray-700">
@@ -124,9 +124,9 @@ export const AuthPage: React.FC = () => {
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">CryptoCloud Mining</h1>
             <p className="text-gray-400">
-              {mode === 'login' ? 'Madenciliğe tekrar hoşgeldiniz' : 
-               mode === 'register' ? 'Madencilik yolculuğunuzu başlatın' :
-               'Şifrenizi sıfırlayın'}
+              {mode === 'login' ? t('loginWelcome') :
+               mode === 'register' ? t('registerWelcome') :
+               t('resetWelcome')}
             </p>
           </div>
 
@@ -146,7 +146,7 @@ export const AuthPage: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="E-posta adresinizi girin"
+                placeholder={t('emailPlaceholder')}
                 required
                 disabled={loading}
               />
@@ -164,7 +164,7 @@ export const AuthPage: React.FC = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full px-4 py-3 pr-12 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Şifrenizi girin"
+                    placeholder={t('passwordPlaceholder')}
                     required
                     disabled={loading}
                   />
@@ -205,7 +205,7 @@ export const AuthPage: React.FC = () => {
             {mode === 'register' && (
               <div>
                 <label htmlFor="referral" className="block text-sm font-medium text-gray-300 mb-2">
-                  Referans Kodu (İsteğe Bağlı)
+                  {t('referralCode')}
                 </label>
                 <input
                   id="referral"
@@ -213,7 +213,7 @@ export const AuthPage: React.FC = () => {
                   value={referralCode}
                   onChange={(e) => setReferralCode(e.target.value)}
                   className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Referans kodunu girin"
+                  placeholder={t('referralPlaceholder')}
                   disabled={loading}
                 />
               </div>
@@ -240,7 +240,7 @@ export const AuthPage: React.FC = () => {
               {loading ? (
                 <div className="flex items-center justify-center space-x-2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  <span>İşleniyor...</span>
+                  <span>{t('processing')}</span>
                 </div>
               ) : (
                 mode === 'login' ? t('login') : 
@@ -253,7 +253,7 @@ export const AuthPage: React.FC = () => {
           <div className="mt-6 text-center space-y-2">
             {mode === 'login' && (
               <p className="text-gray-400">
-                Hesabınız yok mu?
+                {t('noAccount')}
                 <button
                   onClick={() => switchMode('register')}
                   className="ml-2 text-blue-400 hover:text-blue-300 font-medium transition-colors"
@@ -263,10 +263,10 @@ export const AuthPage: React.FC = () => {
                 </button>
               </p>
             )}
-            
+
             {mode === 'register' && (
               <p className="text-gray-400">
-                Zaten hesabınız var mı?
+                {t('haveAccount')}
                 <button
                   onClick={() => switchMode('login')}
                   className="ml-2 text-blue-400 hover:text-blue-300 font-medium transition-colors"
@@ -276,10 +276,10 @@ export const AuthPage: React.FC = () => {
                 </button>
               </p>
             )}
-            
+
             {mode === 'reset' && (
               <p className="text-gray-400">
-                Giriş yapmak ister misiniz?
+                {t('wantToLogin')}
                 <button
                   onClick={() => switchMode('login')}
                   className="ml-2 text-blue-400 hover:text-blue-300 font-medium transition-colors"
@@ -295,13 +295,13 @@ export const AuthPage: React.FC = () => {
             <div className="mt-6 p-4 rounded-lg bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30">
               <h4 className="text-blue-400 font-semibold mb-2 flex items-center space-x-2">
                 <span>🎁</span>
-                <span>Ücretsiz Deneme Dahil!</span>
+                <span>{t('freeTrialIncluded')}</span>
               </h4>
               <ul className="text-sm text-gray-300 space-y-1">
-                <li>• 3 ay ücretsiz madencilik</li>
-                <li>• 25 USDT'ye kadar kazanç</li>
-                <li>• Tüm coinler kullanılabilir</li>
-                <li>• Ödeme gerekmez</li>
+                <li>• {t('freeTrialMonths')}</li>
+                <li>• {t('freeTrialEarnings')}</li>
+                <li>• {t('freeTrialCoins')}</li>
+                <li>• {t('freeTrialNoPayment')}</li>
               </ul>
             </div>
           )}
@@ -320,15 +320,15 @@ export const AuthPage: React.FC = () => {
           <div className="flex items-center justify-center space-x-6 text-gray-500 text-sm">
             <div className="flex items-center space-x-1">
               <span>🔒</span>
-              <span>SSL Güvenli</span>
+              <span>{t('sslSecure')}</span>
             </div>
             <div className="flex items-center space-x-1">
               <span>⚡</span>
-              <span>Hızlı İşlem</span>
+              <span>{t('fastProcessing')}</span>
             </div>
             <div className="flex items-center space-x-1">
               <span>🛡️</span>
-              <span>Güvenilir</span>
+              <span>{t('trusted')}</span>
             </div>
           </div>
         </div>

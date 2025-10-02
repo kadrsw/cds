@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { PaymentNotification } from '../components/PaymentNotification';
+import { useLanguage } from '../hooks/useLanguage';
 import { Package } from '../types';
 import { Check, Crown, Copy } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const PackagesPage: React.FC = () => {
+  const { t } = useLanguage();
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
   
@@ -63,8 +65,8 @@ export const PackagesPage: React.FC = () => {
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-white mb-2">Madencilik Paketleri</h1>
-        <p className="text-gray-400">Madencilik ihtiyaçlarınız için mükemmel planı seçin</p>
+        <h1 className="text-3xl font-bold text-white mb-2">{t('packages')}</h1>
+        <p className="text-gray-400">{t('selectPackage')}</p>
       </div>
 
       {/* Payment Instructions */}

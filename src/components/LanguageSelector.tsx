@@ -14,16 +14,18 @@ export const LanguageSelector: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-gray-700/50 hover:bg-gray-700 text-white transition-colors"
+        className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-gray-700/50 hover:bg-gray-700 text-white transition-colors w-full justify-between"
       >
-        <Globe className="h-4 w-4" />
-        <span className="text-sm">{currentLanguage?.flag}</span>
-        <span className="text-sm hidden sm:inline">{currentLanguage?.name}</span>
+        <div className="flex items-center space-x-2">
+          <Globe className="h-4 w-4" />
+          <span className="text-sm">{currentLanguage?.flag}</span>
+          <span className="text-sm">{currentLanguage?.name}</span>
+        </div>
         <ChevronDown className="h-3 w-3" />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 bg-gray-800 rounded-lg border border-gray-700 shadow-xl z-50 min-w-[150px]">
+        <div className="absolute top-full right-0 mt-2 bg-gray-800 rounded-lg border border-gray-700 shadow-xl z-50 w-full max-h-60 overflow-y-auto">
           {supportedLanguages.map((lang) => (
             <button
               key={lang.code}
@@ -43,8 +45,8 @@ export const LanguageSelector: React.FC = () => {
       )}
 
       {isOpen && (
-        <div 
-          className="fixed inset-0 z-40" 
+        <div
+          className="fixed inset-0 z-40"
           onClick={() => setIsOpen(false)}
         />
       )}

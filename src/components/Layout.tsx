@@ -97,11 +97,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
           {/* User Info & Logout */}
           <div className="flex-shrink-0 border-t border-gray-700 p-4">
-            {/* Language Selector */}
-            <div className="mb-4">
+            {/* Language Selector Card */}
+            <div className="mb-4 bg-gray-700/30 rounded-lg p-3 border border-gray-600">
               <LanguageSelector />
             </div>
-            
+
             <div className="flex items-center space-x-3 mb-3">
               <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center">
                 <User className="h-4 w-4 text-white" />
@@ -196,9 +196,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </div>
               </div>
 
-              {/* Language Selector */}
+              {/* Language Selector Card */}
               <div className="px-4 py-4 border-b border-gray-700">
-                <LanguageSelector />
+                <div className="bg-gray-700/30 rounded-lg p-3 border border-gray-600">
+                  <LanguageSelector />
+                </div>
               </div>
 
               {/* Navigation Links */}

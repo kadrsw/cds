@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { SEOHead } from '../components/SEOHead';
-import { Pickaxe, Shield, Zap, DollarSign, Target, RotateCcw, Smartphone, AlertTriangle, Lock, Users, CheckCircle, Server, Cpu } from 'lucide-react';
+import { Hammer, Shield, Zap, DollarSign, Target, RotateCcw, Smartphone, AlertTriangle, Lock, Users, CheckCircle, Server, Cpu } from 'lucide-react';
 import { SecurityBanner } from '../components/SecurityBanner';
 
 export const LandingPage: React.FC = () => {

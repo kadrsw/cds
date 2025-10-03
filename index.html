@@ -68,6 +68,15 @@
     <link rel="preconnect" href="https://static.hotjar.com" />
     <link rel="preconnect" href="https://www.clarity.ms" />
 
+    <!-- 4. YENİ İYİLEŞTİRME: LCP Resmi Ön Yükleme -->
+    <!-- Logoyu (veya en büyük görseli) tarayıcının mümkün olan en erken zamanda indirmesini sağlar. -->
+    <link rel="preload" href="https://www.freecloudminer.com/logo.png" as="image">
+
+    <!-- 5. YENİ İYİLEŞTİRME: Kritik Yazı Tipini Önceden Yükleme -->
+    <!-- Critical CSS bloğunuzda sistem yazı tipi kullanılıyor olsa da, eğer uygulamanız daha sonra Inter gibi bir yazı tipine geçiyorsa, bu geçişteki FOUT/FOIT etkisini azaltır. -->
+    <!-- Örnek bir WOFF2 Inter yazı tipi ön yüklemesi eklenmiştir. -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/UcCO3FZYsFpT-hIdSIjXWw.woff2" as="font" type="font/woff2" crossorigin>
+
     <!-- DNS Prefetch -->
     <link rel="dns-prefetch" href="//www.google-analytics.com" />
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
@@ -376,7 +385,7 @@
       !function(f,b,e,v,n,t,s)
       {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
       n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      if(!f._fbq)f._fbq=n;n.push=n.loaded=!0;n.version='2.0';
       n.queue=[];t=b.createElement(e);t.async=!0;
       t.src=v;s=b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t,s)}(window, document,'script',

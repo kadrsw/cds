@@ -7,50 +7,54 @@ interface SEOContent {
   keywords: string;
   ogTitle: string;
   ogDescription: string;
-}
-
 const seoContent: Record<string, SEOContent> = {
+  // --- TÜRKÇE (TR) - Tamamen Optimize Edildi ---
   tr: {
-    title: 'Donanım Olmadan Bitcoin Madenciliği | FreeCloudMiner - Hash Gücü Kiralama',
-    description: 'Donanım olmadan Bitcoin madenciliği! Hash gücü kiralama ile günlük Bitcoin kazan. Bulut madencilik Türkiye platformu. ASIC alternatifi, teknik bilgi gerektirmez.',
-    keywords: 'donanım olmadan bitcoin madenciliği, hash gücü kiralama, bitcoin kazan, bulut madencilik türkiye, pasif gelir kripto, kripto para kazanma',
-    ogTitle: 'Donanım Olmadan Bitcoin Madenciliği - Hash Gücü Kiralama',
-    ogDescription: 'Bitcoin kazan! Donanım olmadan bulut madencilik. Hash gücü kiralama ile günlük pasif gelir.'
+    title: 'Cloud Mining Free | Bitcoin Mining Free - En İyi Crypto Miner Hizmeti',
+    description: 'Online Free Mining ile donanım olmadan günlük Bitcoin Mining Free kazançları. Güvenilir Crypto Mining App deneyimi sunan Cloud Miner platformu. Hemen $25 bonus al!',
+    keywords: 'cloud mining free, bitcoin mining free, online free mining, crypto miner, crypto mining app, bitcoin mining program, bitcoin mining crypto miner, coin mining, hash gücü kiralama',
+    ogTitle: 'Cloud Mining Free Başlat: Bitcoin Mining Free ve $25 Bonus Fırsatı',
+    ogDescription: 'Coin Mining ile Bitcoin kazanmaya hemen başla! Online Free Mining ile donanım derdi yok.'
   },
+  // --- İNGİLİZCE (EN) - Tamamen Optimize Edildi ---
   en: {
-    title: 'Bitcoin Mining Without Hardware | FreeCloudMiner - Hash Power Rental',
-    description: 'Start Bitcoin mining without hardware! Earn daily Bitcoin through hash power rental. Cloud mining platform. ASIC alternative, no technical knowledge required.',
-    keywords: 'bitcoin mining without hardware, hash power rental, earn bitcoin, cloud mining, passive crypto income, cryptocurrency earning',
-    ogTitle: 'Bitcoin Mining Without Hardware - Hash Power Rental',
-    ogDescription: 'Earn Bitcoin! Cloud mining without hardware. Daily passive income through hash power rental.'
+    title: 'Cloud Mining Free | Bitcoin Mining Free - Best Crypto Miner Service',
+    description: 'Online Free Mining to start earning Bitcoin Mining Free daily. The best Crypto Mining App experience from a reliable Cloud Miner platform. Get your $25 bonus now!',
+    keywords: 'cloud mining free, bitcoin mining free, online free mining, crypto miner, crypto mining app, bitcoin mining program, bitcoin mining crypto miner, coin mining, hash power rental',
+    ogTitle: 'Cloud Mining Free Starter: Bitcoin Mining Free & $25 Bonus Offer',
+    ogDescription: 'Start Coin Mining and earn Bitcoin today! Experience hassle-free Online Free Mining.'
   },
+  // --- ALMANCA (DE) - Optimize Edildi ---
   de: {
-    title: 'Bitcoin-Mining ohne Hardware | FreeCloudMiner - Hash-Power-Vermietung',
-    description: 'Bitcoin-Mining ohne Hardware starten! Verdienen Sie täglich Bitcoin durch Hash-Power-Vermietung. Cloud-Mining-Plattform. ASIC-Alternative, keine technischen Kenntnisse erforderlich.',
-    keywords: 'bitcoin mining ohne hardware, hash power mieten, bitcoin verdienen, cloud mining, passives krypto einkommen, kryptowährung verdienen',
-    ogTitle: 'Bitcoin-Mining ohne Hardware - Hash-Power-Vermietung',
-    ogDescription: 'Bitcoin verdienen! Cloud-Mining ohne Hardware. Tägliches passives Einkommen durch Hash-Power-Vermietung.'
+    title: 'Kostenloses Cloud Mining | Bitcoin Mining kostenlos - Bester Krypto Miner Service',
+    description: 'Kostenloses Cloud Mining starten: Täglich Bitcoin Mining kostenlos Einnahmen. Zuverlässige Krypto Mining App Erfahrung ohne Bitcoin Mining Programm Komplexität. Jetzt $25 Bonus sichern!',
+    keywords: 'cloud mining kostenlos, bitcoin mining kostenlos, online mining kostenlos, krypto miner, krypto mining app, bitcoin mining programm, coin mining, hash power mieten',
+    ogTitle: 'Kostenloses Cloud Mining starten: Bitcoin Mining kostenlos und $25 Bonus sichern',
+    ogDescription: 'Mit Coin Mining sofort Bitcoin verdienen! Kostenloses Online Mining ohne Hardware-Aufwand.'
   },
+  // --- RUSÇA (RU) - Optimize Edildi ---
   ru: {
-    title: 'Майнинг Bitcoin без оборудования | FreeCloudMiner - Аренда хешрейта',
-    description: 'Начните майнинг Bitcoin без оборудования! Зарабатывайте Bitcoin ежедневно через аренду хешрейта. Платформа облачного майнинга. Альтернатива ASIC, технические знания не требуются.',
-    keywords: 'майнинг биткоин без оборудования, аренда хешрейта, заработок биткоин, облачный майнинг, пассивный доход криптовалюта',
-    ogTitle: 'Майнинг Bitcoin без оборудования - Аренда хешрейта',
-    ogDescription: 'Зарабатывайте Bitcoin! Облачный майнинг без оборудования. Ежедневный пассивный доход через аренду хешрейта.'
+    title: 'Бесплатный облачный майнинг | Майнинг Bitcoin бесплатно - Лучший сервис Крипто-майнинга',
+    description: 'Начните Бесплатный облачный майнинг и ежедневно зарабатывайте Bitcoin бесплатно. Надежное Приложение для криптомайнинга без необходимости установки Программы для майнинга. Получите $25 бонус прямо сейчас!',
+    keywords: 'бесплатный облачный майнинг, майнинг bitcoin бесплатно, онлайн майнинг бесплатно, крипто майнер, приложение для криптомайнинга, программа для майнинга bitcoin, майнинг монет, аренда хешрейта',
+    ogTitle: 'Запустить Бесплатный облачный майнинг: Bitcoin Mining бесплатно и $25 Бонус',
+    ogDescription: 'Начните Майнинг монет и зарабатывайте Bitcoin! Бесплатный онлайн майнинг без проблем с оборудованием.'
   },
+  // --- ARAPÇA (AR) - Optimize Edildi ---
   ar: {
-    title: 'تعدين البيتكوين بدون معدات | FreeCloudMiner - تأجير قوة التجزئة',
-    description: 'ابدأ تعدين البيتكوين بدون معدات! اكسب البيتكوين يوميًا من خلال تأجير قوة التجزئة. منصة التعدين السحابي. بديل ASIC، لا تتطلب معرفة تقنية.',
-    keywords: 'تعدين البيتكوين بدون معدات, تأجير قوة التجزئة, كسب البيتكوين, التعدين السحابي, دخل سلبي من العملات المشفرة',
-    ogTitle: 'تعدين البيتكوين بدون معدات - تأجير قوة التجزئة',
-    ogDescription: 'اكسب البيتكوين! التعدين السحابي بدون معدات. دخل سلبي يومي من خلال تأجير قوة التجزئة.'
+    title: 'تعدين سحابي مجاني | تعدين البيتكوين مجاني - أفضل خدمة مُعدِّن العملات',
+    description: 'ابدأ التعدين السحابي المجاني واكسب البيتكوين مجانًا يوميًا. منصة مُعدِّن العملات المشفرة موثوقة توفر تجربة تطبيق تعدين ممتازة. احصل على مكافأة 25 دولار الآن!',
+    keywords: 'تعدين سحابي مجاني, تعدين البيتكوين مجاني, تعدين مجاني عبر الإنترنت, مُعدِّن العملات المشفرة, تطبيق تعدين العملات المشفرة, برنامج تعدين البيتكوين, تعدين العملات, تأجير قوة التجزئة',
+    ogTitle: 'ابدأ التعدين السحابي المجاني: تعدين البيتكوين مجاني ومكافأة 25 دولار',
+    ogDescription: 'ابدأ تعدين العملات واكسب البيتكوين! التعدين المجاني عبر الإنترنت بدون متاعب المعدات.'
   },
+  // --- ÇİNCE (ZH) - Optimize Edildi ---
   zh: {
-    title: '无需硬件即可挖掘比特币 | FreeCloudMiner - 算力租赁',
-    description: '无需硬件即可开始比特币挖矿！通过算力租赁每天赚取比特币。云挖矿平台。ASIC替代方案，无需技术知识。',
-    keywords: '无硬件比特币挖矿, 算力租赁, 赚取比特币, 云挖矿, 被动加密货币收入, 加密货币赚钱',
-    ogTitle: '无需硬件即可挖掘比特币 - 算力租赁',
-    ogDescription: '赚取比特币！无需硬件的云挖矿。通过算力租赁获得每日被动收入。'
+    title: '免费云挖矿 | 免费比特币挖矿 - 最佳加密矿工 服务',
+    description: '通过免费在线挖矿开始每日免费比特币挖矿收入。可靠的加密挖矿应用体验，无需复杂的比特币挖矿程序。立即领取 25 美元奖励！',
+    keywords: '免费云挖矿, 免费比特币挖矿, 免费在线挖矿, 加密矿工, 加密挖矿应用, 比特币挖矿程序, 代币挖矿, 算力租赁',
+    ogTitle: '启动免费云挖矿: 免费比特币挖矿和 25 美元奖励机会',
+    ogDescription: '立即开始代币挖矿并赚取比特币！免费在线挖矿，无需担心硬件问题。'
   }
 };
 

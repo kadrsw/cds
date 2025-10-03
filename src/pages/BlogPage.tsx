@@ -1,7 +1,7 @@
 // src/pages/BlogPage.tsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, User, ArrowRight, Search, Tag, Pickaxe, Home } from 'lucide-react';
+import { Calendar, User, ArrowRight, Search, Tag, Hammer, Home } from 'lucide-react';
 import { blogPosts } from '../data/blogPosts';
 
 export const BlogPage: React.FC = () => {
@@ -32,7 +32,7 @@ export const BlogPage: React.FC = () => {
           <nav className="flex justify-between items-center py-4">
             <Link to="/" className="flex items-center space-x-2">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-                <Pickaxe className="h-6 w-6 text-white" />
+                <Hammer className="h-6 w-6 text-white" />
               </div>
               <span className="text-2xl font-bold text-white">FreeCloudMiner</span>
             </Link>

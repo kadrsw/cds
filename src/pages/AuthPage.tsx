@@ -4,7 +4,7 @@ import { useLanguage } from '../hooks/useLanguage';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { supportedLanguages, detectUserLanguage } from '../utils/languages';
 import { useNavigate, Link } from 'react-router-dom';
-import { Pickaxe, Eye, EyeOff, ArrowLeft, Globe } from 'lucide-react';
+import { Hammer, Eye, EyeOff, ArrowLeft, Globe } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const AuthPage: React.FC = () => {
@@ -119,7 +119,7 @@ export const AuthPage: React.FC = () => {
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-                <Pickaxe className="h-7 w-7 text-white" />
+                <Hammer className="h-7 w-7 text-white" />
               </div>
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">CryptoCloud Mining</h1>

@@ -6,7 +6,6 @@
     
     <!-- Basic Meta Tags -->
     <meta charset="UTF-8" />
-    <!-- Viewport ayarı zaten çok iyi. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0" />
     
     <!-- Mobile Web App Configuration -->
@@ -58,26 +57,27 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://www.freecloudminer.com/" />
     
-    <!-- 1. PERFORMANS İYİLEŞTİRMESİ: Kritik Üçüncü Taraf Sunuculara Ön Bağlantı (Preconnect) Eklendi -->
+    <!-- PERFORMANS İYİLEŞTİRMELERİ: KRİTİK İSTEK ZİNCİRİNİ HIZLANDIRMA -->
+    <!-- Tüm kritik dış sunuculara (Firebase, Google APIs, Fontlar) ön bağlantı kurulur. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://www.googletagmanager.com" />
-    <!-- Eklenenler: Firebase, Facebook, Hotjar, Clarity sunucularına bağlantı hızlandırılır -->
     <link rel="preconnect" href="https://deneme-ca220.firebaseapp.com" />
+    <!-- YENİ: Kritik yoldaki Google API'leri için preconnect -->
+    <link rel="preconnect" href="https://www.googleapis.com" />
+    <link rel="preconnect" href="https://apis.google.com" />
+    <!-- İzleyiciler için preconnect -->
     <link rel="preconnect" href="https://connect.facebook.net" />
     <link rel="preconnect" href="https://static.hotjar.com" />
     <link rel="preconnect" href="https://www.clarity.ms" />
 
-    <!-- 4. YENİ İYİLEŞTİRME: LCP Resmi Ön Yükleme -->
-    <!-- Logoyu (veya en büyük görseli) tarayıcının mümkün olan en erken zamanda indirmesini sağlar. -->
+    <!-- LCP Resmi Ön Yükleme (Preload) -->
     <link rel="preload" href="https://www.freecloudminer.com/logo.png" as="image">
 
-    <!-- 5. YENİ İYİLEŞTİRME: Kritik Yazı Tipini Önceden Yükleme -->
-    <!-- Critical CSS bloğunuzda sistem yazı tipi kullanılıyor olsa da, eğer uygulamanız daha sonra Inter gibi bir yazı tipine geçiyorsa, bu geçişteki FOUT/FOIT etkisini azaltır. -->
-    <!-- Örnek bir WOFF2 Inter yazı tipi ön yüklemesi eklenmiştir. -->
+    <!-- Kritik Yazı Tipini Önceden Yükleme (Preload) -->
     <link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/UcCO3FZYsFpT-hIdSIjXWw.woff2" as="font" type="font/woff2" crossorigin>
 
-    <!-- DNS Prefetch -->
+    <!-- DNS Prefetch (Daha az kritik bağlantılar için) -->
     <link rel="dns-prefetch" href="//www.google-analytics.com" />
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
@@ -87,11 +87,81 @@
     <meta name="msapplication-TileColor" content="#1F2937" />
     <meta name="msapplication-config" content="/browserconfig.xml" />
 
-    <!-- 2. PERFORMANS İYİLEŞTİRMESİ: Harici CSS (index-DIR6SmJQ.css) Asenkron Yükleme -->
-    <!-- Bu, CSS dosyasının sayfa oluşturmayı (render-blocking) engellemesini önler. -->
+    <!-- HARİCİ CSS ASENKRON YÜKLEME (Render-Blocking'i önlemek için) -->
+    <!-- Lighthouse raporunda bu dosya render-blocking olarak görünüyor. Bu yapıyı koruyarak dosyanın boyutunu küçültmeye odaklanmalıyız. -->
     <link rel="stylesheet" href="/assets/index-DIR6SmJQ.css" media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href="/assets/index-DIR6SmJQ.css" /></noscript>
     
+    <!-- CRITICAL CSS (Ana sayfanın ilk görünümü için gerekli stiller) -->
+    <style>
+      html {
+        font-size: 16px;
+        scroll-behavior: smooth;
+      }
+      
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #ffffff;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+      }
+      
+      #root {
+        min-height: 100vh;
+        width: 100%;
+        display: block;
+      }
+      
+      /* Mobile optimizations */
+      @media (max-width: 768px) {
+        html {
+          font-size: 14px;
+          -webkit-text-size-adjust: 100%;
+          -ms-text-size-adjust: 100%;
+        }
+        
+        body {
+          -webkit-tap-highlight-color: transparent;
+        }
+      }
+      
+      /* Touch optimizations */
+      @media (hover: none) and (pointer: coarse) {
+        button, 
+        a, 
+        [role="button"],
+        .clickable {
+          min-height: 44px;
+          min-width: 44px;
+          touch-action: manipulation;
+        }
+      }
+      
+      /* Accessibility */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      
+      /* Focus styles */
+      :focus-visible {
+        outline: 2px solid #3B82F6;
+        outline-offset: 2px;
+      }
+    </style>
+
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
     {
@@ -226,75 +296,6 @@
     <!-- Copyright -->
     <meta name="copyright" content="FreeCloudMiner GmbH © 2024" />
     
-    <!-- Critical CSS (Bu blok zaten harika, LCP için kritik stiller burada tutuldu) -->
-    <style>
-      html {
-        font-size: 16px;
-        scroll-behavior: smooth;
-      }
-      
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-        line-height: 1.6;
-        color: #333;
-        background-color: #ffffff;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeLegibility;
-      }
-      
-      #root {
-        min-height: 100vh;
-        width: 100%;
-        display: block;
-      }
-      
-      /* Mobile optimizations */
-      @media (max-width: 768px) {
-        html {
-          font-size: 14px;
-          -webkit-text-size-adjust: 100%;
-          -ms-text-size-adjust: 100%;
-        }
-        
-        body {
-          -webkit-tap-highlight-color: transparent;
-        }
-      }
-      
-      /* Touch optimizations */
-      @media (hover: none) and (pointer: coarse) {
-        button, 
-        a, 
-        [role="button"],
-        .clickable {
-          min-height: 44px;
-          min-width: 44px;
-          touch-action: manipulation;
-        }
-      }
-      
-      /* Accessibility */
-      .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-      
-      /* Focus styles */
-      :focus-visible {
-        outline: 2px solid #3B82F6;
-        outline-offset: 2px;
-      }
-    </style>
   </head>
   <body>
     <!-- Skip to main content for accessibility -->
@@ -305,9 +306,9 @@
     <!-- Main content landmark -->
     <main id="main-content" style="display: none;"></main>
     
-    <!-- Module preload for critical resources -->
+    <!-- Modül ön yüklemesi ve performans izleme -->
     <script>
-      // Preload critical modules
+      // Kritik modülleri ön yükle
       const criticalResources = ['/src/main.tsx'];
       criticalResources.forEach(resource => {
         const link = document.createElement('link');
@@ -316,24 +317,28 @@
         document.head.appendChild(link);
       });
       
-      // Performance monitoring
+      // Performans izleme (Sayfa yükleme süresini ölçer)
       window.addEventListener('load', function() {
-        // Web Vitals reporting
         if ('performance' in window) {
           setTimeout(() => {
             const navigation = performance.getEntriesByType('navigation')[0];
-            if (navigation && gtag) {
+            if (navigation && typeof gtag === 'function') {
               gtag('event', 'page_load_time', {
                 event_category: 'Performance',
                 value: Math.round(navigation.loadEventEnd - navigation.fetchStart)
               });
+            }
+            // LCP'yi engelleyen ana içeriğin hemen gösterilmesi
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.style.display = 'block';
             }
           }, 0);
         }
       });
     </script>
     
-    <!-- Kendi ana uygulamanızın betiği -->
+    <!-- Kendi ana uygulamanızın betiği (Type="module" sayesinde defer gibi yüklenir) -->
     <script type="module" src="/src/main.tsx"></script>
     
     <!-- NOSCRIPT FALLBACK (Facebook) -->
@@ -342,8 +347,8 @@
            src="https://www.facebook.com/tr?id=1234567890123456&ev=PageView&noscript=1" />
     </noscript>
     
-    <!-- 3. PERFORMANS İYİLEŞTİRMESİ: Tüm Üçüncü Taraf Betikler Tek Bir DEFERRED Blok İçinde Birleştirildi -->
-    <!-- Bu, bu betiklerin ana içeriğin yüklenmesini (LCP) engellemesini önler. -->
+    <!-- TÜM ÜÇÜNCÜ TARAF BETİKLERİ TEK BİR DEFERRED BLOK İÇİNDE BİRLEŞTİRİLDİ -->
+    <!-- 'defer' ana JS'nin ayrıştırılması bittikten sonra çalışmayı garanti eder, böylece TBT düşer. -->
     <script defer>
       // Google Tag Manager / Analytics (gtag.js dosyasını indirme)
       (function() {

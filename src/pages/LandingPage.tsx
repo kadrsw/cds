@@ -35,32 +35,32 @@ export const LandingPage: React.FC = () => {
 
   const faqData = [
     {
-      question: "Donanım olmadan Bitcoin madenciliği nasıl yapılır?",
-      answer: "FreeCloudMiner ile donanım satın almadan hash gücü kiralayarak Bitcoin madenciliği yapabilirsiniz. Bulut madencilik platformumuz sayesinde pahalı ASIC madencileri satın almaya gerek yok. Sadece hesap açın, paket seçin ve günlük Bitcoin kazanmaya başlayın."
+      question: "Donanım olmadan Free Cloud Mining ile Bitcoin madenciliği nasıl yapılır?",
+      answer: "FreeCloudMiner ile donanım satın almadan hash gücü kiralayarak Online Free Mining yapabilirsiniz. Cloud mining free platformumuz sayesinde pahalı ASIC madencileri veya karmaşık Bitcoin mining programı gereksinimi ortadan kalkar. Güvenli Crypto Miner sistemimizle sadece hesap açın, paket seçin ve günlük Coin Mining ile Bitcoin kazanmaya başlayın."
     },
     {
-      question: "Hash gücü kiralama nedir?",
-      answer: "Hash gücü kiralama, madencilik donanımlarının işlem gücünü belirli bir süre için kiralamaktır. Bu sayede kendi ASIC madenci cihazınız olmadan, profesyonel madencilik çiftliklerinin gücünden yararlanarak Bitcoin ve diğer kripto paraları madenciliği yapabilirsiniz."
+      question: "Hash Gücü Kiralama (Cloud Mining) Nedir?",
+      answer: "Hash Gücü Kiralama, güçlü kripto miner donanımlarının işlem gücünü belirli bir süre için kiralamaktır. Bu, sizin adınıza Bitcoin mining yapan bir program gibi çalışır. Kendi pahalı ASIC madencinize sahip olmadan, profesyonel Cloud Mining çiftliklerinin gücünden yararlanarak Bitcoin ve diğer Coin Mining işlemlerini güvenle yapabilirsiniz."
     },
     {
-      question: "Günlük Bitcoin ödemeleri nasıl çalışır?",
-      answer: "Kiraladığınız hash gücü oranında günlük Bitcoin kazançlarınız hesaplanır ve otomatik olarak bakiyenize eklenir. Minimum $10 tutarından itibaren para çekme talebinde bulunabilirsiniz. Ödemeler 24-48 saat içinde USDT olarak cüzdanınıza gönderilir."
+      question: "Günlük Bitcoin Mining Free Kazanç Ödemeleri Nasıl Çalışır?",
+      answer: "Kiraladığınız hash gücü oranında günlük Bitcoin Mining Free kazançlarınız hesaplanır ve otomatik olarak bakiyenize eklenir. Sistemimiz, tıpkı bir Crypto Mining App gibi, tüm hesaplamaları sizin yerinize yapar. Minimum $10 tutarından itibaren para çekme talebinde bulunabilirsiniz. Ödemeler 24-48 saat içinde USDT olarak cüzdanınıza güvenle gönderilir."
     },
     {
-      question: "Bulut madencilik teknik bilgi gerektirir mi?",
-      answer: "Hayır! Bulut madencilik platformumuz tamamen kullanıcı dostudur. Teknik bilgi, donanım kurulumu veya elektrik altyapısı gerektirmez. Sadece hesap açın, paketi seçin ve pasif gelir elde etmeye başlayın. Mobil cihazınızdan bile yönetebilirsiniz."
+      question: "Bulut Madencilik (Online Free Mining) Teknik Bilgi Gerektirir mi?",
+      answer: "Hayır! Online Free Mining platformumuz tamamen kullanıcı dostudur. Bitcoin Mining Programı kurmaya, teknik bilgiye, donanım kurulumuna veya elektrik altyapısına gerek yok. Sadece hesap açın, paketi seçin ve pasif gelir elde etmeye başlayın. Platformumuz, bir Crypto Mining App kadar basit ve kullanıcı dostudur; mobil cihazınızdan bile kolayca yönetebilirsiniz."
     },
     {
-      question: "ASIC madenci alternatiği olan bulut madencilik güvenli mi?",
-      answer: "Evet, platformumuz SSL şifreleme, iki faktörlü doğrulama ve soğuk cüzdan saklama ile korunur. Kendi ASIC madenci cihazı almaktan çok daha güvenli ve pratiktir. Elektrik kesintisi, donanım arızası veya bakım masrafları gibi risklerle uğraşmazsınız."
+      question: "ASIC madenci alternatifi Cloud Mining Free hizmeti güvenli midir?",
+      answer: "Evet, Cloud Mining Free platformumuz güvenliğiniz için SSL şifreleme, iki faktörlü doğrulama (2FA) ve soğuk cüzdan saklama ile üst düzeyde korunur. Kendi ASIC madenci cihazınızı almaktan ve yönetmekten çok daha güvenli ve pratiktir. Siz, bir Bitcoin Mining Programı veya fiziksel donanım kaynaklı risklerle (elektrik kesintisi, donanım arızası, bakım) uğraşmazsınız. Güvenli bir Crypto Miner hizmeti sunarız."
     },
     {
-      question: "Pasif gelir kripto madenciliği ne kadar kazandırır?",
-      answer: "Kazançlar kiraladığınız hash gücü miktarına ve Bitcoin fiyatına göre değişir. Başlangıç paketi ile günlük yaklaşık $2.99, profesyonel paket ile $9.03 kazanç sağlayabilirsiniz. Bu tamamen pasif bir gelirdir ve hiçbir işlem yapmanız gerekmez."
+      question: "Pasif Gelir Coin Mining Ne Kadar Kazandırır?",
+      answer: "Kazançlar, kiraladığınız hash gücü miktarına ve kripto fiyatlarına göre değişir. Ancak Coin Mining ile pasif gelir elde etmek için başlangıç paketimizle günlük yaklaşık $2.99, profesyonel paketimizle ise $9.03 kazanç sağlayabilirsiniz. Üstelik bu Cloud Mining Free hizmetinde hiçbir işlem yapmanız gerekmez; kazançlarınız tamamen pasif gelir olarak hesaplanır."
     },
     {
-      question: "Mobil cihazdan Bitcoin madenciliği yapabilir miyim?",
-      answer: "Evet! Platformumuz tamamen mobil uyumludur. Android ve iOS cihazlarınızdan madencilik durumunuzu takip edebilir, kazançlarınızı görüntüleyebilir ve para çekme işlemleri yapabilirsiniz. PWA desteği ile uygulama deneyimi yaşarsınız."
+      question: "Mobil Cihazdan Crypto Mining App Deneyimiyle Bitcoin Madenciliği Yapabilir miyim?",
+      answer: "Evet! Platformumuz tamamen mobil uyumlu olup, herhangi bir Bitcoin Mining Programı kurmanıza gerek kalmadan çalışır. Crypto Mining App deneyimi yaşamanız için PWA desteği sunuyoruz. Android ve iOS cihazlarınızdan Cloud Miner Free durumunuzu takip edebilir, kazançlarınızı görüntüleyebilir ve para çekme işlemleri yapabilirsiniz. Cebinizden Online Free Mining kolaylığını yaşayın!"
     }
   ];
 
@@ -237,10 +237,9 @@ export const LandingPage: React.FC = () => {
         <section id="madencilik" className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Hash Gücü Kiralama ile Desteklenen Kriptolar</h2>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Cloud Miner ile Hash Gücü Kiralama Destekli Kriptolar</h2>
               <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                Donanım olmadan popüler kripto paraların madenciliğini yapın. 
-                Her kripto için optimize edilmiş hash gücü kiralama paketleri.
+                Donanım olmadan en popüler kripto paraların Coin Mining işlemlerini yapın. Güvenilir Crypto Miner hizmetimizle her kripto için optimize edilmiş hash gücü kiralama paketlerimiz mevcuttur.
               </p>
             </div>
             
@@ -306,9 +305,9 @@ export const LandingPage: React.FC = () => {
         <section id="paketler" className="py-20 bg-black/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Hash Gücü Kiralama Paketleri</h2>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Bitcoin Mining Program Alternatifi Cloud Mining Paketleri</h2>
               <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                Donanım olmadan Bitcoin madenciliği için uygun paketi seçin ve pasif gelir kazanmaya başlayın
+               Online Free Mining deneyimine başlamak için size en uygun paketi seçin ve pasif Bitcoin Mining Free geliri kazanmaya hemen başlayın.
               </p>
             </div>
             
@@ -443,10 +442,9 @@ export const LandingPage: React.FC = () => {
         <section id="sss" className="py-20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Donanım Olmadan Bitcoin Madenciliği SSS</h2>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Cloud Mining Free ve Bitcoin Mining Program Sık Sorulan Sorular</h2>
               <p className="text-xl text-gray-300">
-                Hash gücü kiralama ve bulut madencilik hakkında merak ettikleriniz. 
-                Pasif gelir kripto madenciliği ile ilgili tüm sorularınızın cevapları.
+               Crypto Miner hizmetimiz, hash gücü kiralama ve Online Free Mining hakkında merak edilenler. Tüm Coin Mining ve pasif gelir sorularınızın cevapları burada.
               </p>
             </div>
             
@@ -475,8 +473,7 @@ export const LandingPage: React.FC = () => {
             
             <div className="text-center mt-12">
               <p className="text-gray-300 mb-4">
-                Donanım olmadan Bitcoin madenciliği hakkında başka sorularınız mı var? 
-                7/24 Türkçe destek ekibimiz hash gücü kiralama konusunda size yardımcı olmaya hazır.
+                Cloud Mining Free veya Bitcoin Mining Program alternatifleri hakkında başka sorularınız mı var? 7/24 Türkçe destek ekibimiz, güvenilir Crypto Miner hizmetimiz ve hash gücü kiralama konusunda size yardımcı olmaya hazır.
               </p>
               <a 
                 href="mailto:freecloudeminer1@gmail.com" 
@@ -493,11 +490,10 @@ export const LandingPage: React.FC = () => {
         <section className="py-20 bg-gradient-to-r from-blue-600/20 to-purple-600/20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-              Bitcoin Kazan - Donanım Olmadan Başla
+              Bitcoin Mining Free ile Pasif Kazanç Sağlamaya Hemen Başla!
             </h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Hash gücü kiralama ile pasif gelir kripto madenciliği. 
-              $25 ücretsiz bonus ile ASIC alternatifi bulut madencilik deneyimi yaşayın.
+              Cloud Mining Free hizmetimizle pasif gelir Coin Mining deneyimine başlayın. $25 ücretsiz bonus ile ASIC alternatifi güvenilir Crypto Miner hizmetimizi hemen deneyimleyin.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link 
@@ -506,7 +502,7 @@ export const LandingPage: React.FC = () => {
                 aria-label="Bitcoin kazanmaya ücretsiz başla"
               >
                 <span>🚀</span>
-                <span>Bitcoin Kazan - Ücretsiz Başla</span>
+                <span>Cloud Mining Free Başlat - Ücretsiz $25 Bonus Al</span>
               </Link>
               <a 
                 href="mailto:freecloudeminer1@gmail.com" 
@@ -529,7 +525,7 @@ export const LandingPage: React.FC = () => {
               <span className="text-3xl font-bold text-white">FreeCloudMiner</span>
             </div>
             <p className="text-gray-300 max-w-2xl mx-auto">
-              Donanım olmadan Bitcoin madenciliği platformu. Hash gücü kiralama ile günlük pasif gelir kripto madenciliği.
+              FreeCloudMiner: Donanım gerektirmeyen Cloud Mining Free ve Bitcoin Mining Program alternatifiniz. Güvenilir Crypto Miner hizmeti ile pasif gelir Coin Mining yapın.
             </p>
           </div>
           

@@ -5,7 +5,7 @@ import { useLanguage } from '../hooks/useLanguage';
 import { TrialStatus } from '../components/TrialStatus';
 import { ReferralSystem } from '../components/ReferralSystem';
 import { UpgradePrompt } from '../components/UpgradePrompt';
-import { TrendingUp, DollarSign, Clock, Package, Pickaxe, Eye, Shield } from 'lucide-react';
+import { TrendingUp, DollarSign, Clock, Package, Hammer, Eye, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const Dashboard: React.FC = () => {
@@ -46,7 +46,7 @@ export const Dashboard: React.FC = () => {
     {
       title: t('startMining'),
       description: t('startMining'),
-      icon: Pickaxe,
+      icon: Hammer,
       color: 'bg-blue-600/20 border-blue-500/30 hover:bg-blue-600/30',
       iconColor: 'text-blue-400',
       link: '/mining'

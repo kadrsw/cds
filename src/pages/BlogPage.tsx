@@ -62,11 +62,10 @@ export const BlogPage: React.FC = () => {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-              Kripto Madencilik Rehberi
+              Cloud Miner ve Bitcoin Mining Free Detaylı Rehberi
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Bitcoin, blockchain ve kripto para madenciliği hakkında güncel bilgiler, 
-              rehberler ve piyasa analizleri.
+              Online Free Mining, Bitcoin, blockchain ve Coin Mining hakkında güncel bilgiler, Crypto Miner rehberleri ve piyasa analizleri.
             </p>
           </div>
 

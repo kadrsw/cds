@@ -1,7 +1,7 @@
 // src/config/firebase.ts
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getDatabase } from 'firebase/database';
+import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
 
 // Firebase yapılandırması - Çevre değişkenlerini kullan veya varsayılan değerler
 const firebaseConfig = {
@@ -15,13 +15,27 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-FS254NEFYN"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+let app;
+let auth;
+let database;
 
-// Initialize Firebase Authentication and get a reference to the service
-export const auth = getAuth(app);
+try {
+  // Initialize Firebase
+  app = initializeApp(firebaseConfig);
+  console.log('✅ Firebase initialized successfully');
 
-// Initialize Realtime Database and get a reference to the service
-export const database = getDatabase(app);
+  // Initialize Firebase Authentication and get a reference to the service
+  auth = getAuth(app);
+  
+  // Initialize Realtime Database and get a reference to the service
+  database = getDatabase(app);
+  
+  console.log('✅ Firebase Auth and Database initialized');
+} catch (error) {
+  console.error('❌ Firebase initialization error:', error);
+  // Fallback - boş objeler döndür
+  throw new Error('Firebase could not be initialized. Please check your configuration.');
+}
 
+export { auth, database };
 export default app;

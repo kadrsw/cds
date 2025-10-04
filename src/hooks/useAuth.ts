@@ -13,8 +13,11 @@ export const useAuth = () => {
 
   useEffect(() => {
     let userDataUnsubscribe: (() => void) | null = null;
+    let isMounted = true; // Cleanup için
 
     const authUnsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+      if (!isMounted) return; // Component unmount olduysa işlem yapma
+
       try {
         if (firebaseUser) {
           const userRef = ref(database, `users/${firebaseUser.uid}`);
@@ -22,9 +25,13 @@ export const useAuth = () => {
           // Check if user exists
           const snapshot = await get(userRef);
           
+          if (!isMounted) return; // Async işlem sonrası tekrar kontrol
+          
           if (snapshot.exists()) {
             // Set up real-time listener for user data
             userDataUnsubscribe = onValue(userRef, (userSnapshot) => {
+              if (!isMounted) return;
+              
               if (userSnapshot.exists()) {
                 const userData = userSnapshot.val();
                 
@@ -32,7 +39,7 @@ export const useAuth = () => {
                 if (!userData.referralCode) {
                   const referralCode = generateReferralCode(firebaseUser.uid);
                   const updatedUserData = { ...userData, referralCode };
-                  set(userRef, updatedUserData);
+                  set(userRef, updatedUserData).catch(console.error);
                   setUser(updatedUserData);
                 } else {
                   setUser(userData);
@@ -43,7 +50,7 @@ export const useAuth = () => {
               }
               setLoading(false);
             }, (error) => {
-              // Sessiz hata - izinler olmayabilir
+              console.error('User data listener error:', error);
               setLoading(false);
             });
           } else {
@@ -51,35 +58,46 @@ export const useAuth = () => {
             const deviceFingerprint = await generateDeviceFingerprint();
             const referralCode = generateReferralCode(firebaseUser.uid);
             
+            if (!isMounted) return;
+            
             // URL'den referans kodunu kontrol et
             const urlParams = new URLSearchParams(window.location.search);
             const referralParam = urlParams.get('ref');
             let referredBy = undefined;
             
             if (referralParam) {
-              // Referans kodunu kontrol et
-              const usersRef = ref(database, 'users');
-              const usersSnapshot = await get(usersRef);
-              if (usersSnapshot.exists()) {
-                const users = usersSnapshot.val();
-                const referrer = Object.values(users).find((u: any) => u.referralCode === referralParam);
-                if (referrer) {
-                  referredBy = (referrer as any).uid;
-                  
-                  // Referans veren kullanıcının referans sayısını artır
-                  const referrerRef = ref(database, `users/${(referrer as any).uid}`);
-                  const referrerData = referrer as any;
-                  await set(referrerRef, {
-                    ...referrerData,
-                    totalReferrals: (referrerData.totalReferrals || 0) + 1
-                  });
+              try {
+                // Referans kodunu kontrol et
+                const usersRef = ref(database, 'users');
+                const usersSnapshot = await get(usersRef);
+                if (usersSnapshot.exists()) {
+                  const users = usersSnapshot.val();
+                  const referrer = Object.values(users).find((u: any) => u.referralCode === referralParam);
+                  if (referrer) {
+                    referredBy = (referrer as any).uid;
+                    
+                    // Referans veren kullanıcının referans sayısını artır
+                    const referrerRef = ref(database, `users/${(referrer as any).uid}`);
+                    const referrerData = referrer as any;
+                    await set(referrerRef, {
+                      ...referrerData,
+                      totalReferrals: (referrerData.totalReferrals || 0) + 1
+                    });
+                  }
                 }
+              } catch (error) {
+                console.error('Referral processing error:', error);
               }
             }
+            
+            if (!isMounted) return;
             
             // Kullanıcı dilini ve ülkesini tespit et
             const userLanguage = detectUserLanguage();
             const userCountry = await getUserCountry();
+            const userIP = await getUserIP();
+            
+            if (!isMounted) return;
             
             const newUser: User = {
               uid: firebaseUser.uid,
@@ -87,10 +105,10 @@ export const useAuth = () => {
               displayName: firebaseUser.displayName || '',
               createdAt: new Date().toISOString(),
               trialStartDate: new Date().toISOString(),
-              trialEndDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days
+              trialEndDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
               totalTrialEarnings: 0,
               balance: 0,
-              isAdmin: firebaseUser.email === 'admin@cryptocloudmining.com', // İlk admin hesabı
+              isAdmin: firebaseUser.email === 'admin@cryptocloudmining.com',
               referralCode,
               ...(referredBy && { referredBy }),
               referralEarnings: 0,
@@ -98,11 +116,14 @@ export const useAuth = () => {
               isBanned: false,
               deviceFingerprint: deviceFingerprint,
               language: userLanguage,
-              lastLoginIP: await getUserIP(),
+              lastLoginIP: userIP,
               country: userCountry
             };
             
             await set(userRef, newUser);
+            
+            if (!isMounted) return;
+            
             setUser(newUser);
             
             // Güvenlik logu (sessiz hata)
@@ -110,20 +131,23 @@ export const useAuth = () => {
             
             // Set up real-time listener for the new user
             userDataUnsubscribe = onValue(userRef, (userSnapshot) => {
+              if (!isMounted) return;
+              
               if (userSnapshot.exists()) {
                 const userData = userSnapshot.val();
                 setUser(userData);
               }
               setLoading(false);
             }, (error) => {
-              // Sessiz hata - izinler olmayabilir
+              console.error('User data listener error:', error);
               setLoading(false);
             });
           }
         } else {
           // Çıkış logu (sessiz hata)
-          if (user) {
-            logSecurityEvent(user.uid, 'LOGOUT', user.deviceFingerprint || '').catch(() => {});
+          const currentUser = user;
+          if (currentUser) {
+            logSecurityEvent(currentUser.uid, 'LOGOUT', currentUser.deviceFingerprint || '').catch(() => {});
           }
           
           // Clean up user data listener when user logs out
@@ -136,19 +160,31 @@ export const useAuth = () => {
         }
       } catch (error) {
         console.error('Error in auth state change:', error);
-        setUser(null);
-        setLoading(false);
+        if (isMounted) {
+          setUser(null);
+          setLoading(false);
+        }
       }
     });
 
+    // Timeout fallback - 5 saniye içinde loading bitmediyse zorla kapat
+    const timeoutId = setTimeout(() => {
+      if (isMounted && loading) {
+        console.warn('Auth initialization timeout - forcing loading to false');
+        setLoading(false);
+      }
+    }, 5000);
+
     return () => {
+      isMounted = false; // Component unmount olduğunda flag'i değiştir
+      clearTimeout(timeoutId);
       authUnsubscribe();
       // Clean up user data listener
       if (userDataUnsubscribe) {
         userDataUnsubscribe();
       }
     };
-  }, [user?.uid]);
+  }, []); // ← BAĞIMLILIK KALDIRILDI! Bu kritik düzeltme
 
   const login = async (email: string, password: string) => {
     try {
@@ -347,10 +383,11 @@ export const useAuth = () => {
   // IP adresi alma
   const getUserIP = async (): Promise<string> => {
     try {
-      const response = await fetch('https://api.ipify.org?format=json');
+      const response = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(3000) });
       const data = await response.json();
       return data.ip;
     } catch (error) {
+      console.warn('Failed to get user IP:', error);
       return 'unknown';
     }
   };
@@ -358,10 +395,11 @@ export const useAuth = () => {
   // Kullanıcı ülkesi alma
   const getUserCountry = async (): Promise<string> => {
     try {
-      const response = await fetch('https://ipapi.co/json/');
+      const response = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3000) });
       const data = await response.json();
       return data.country_code || 'unknown';
     } catch (error) {
+      console.warn('Failed to get user country:', error);
       return 'unknown';
     }
   };

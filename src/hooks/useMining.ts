@@ -57,7 +57,7 @@ export const useMining = () => {
       symbol: 'BTC', 
       icon: '₿', 
       baseHashRate: 1000, 
-      baseEarning: 0.00347, // Trial için saatlik kazanç ($0.0833/24 saat)
+      baseEarning: 0.01157, // Trial için saatlik kazanç (90 günde $25: $25÷90÷24 = $0.01157/saat)
       color: '#F7931A',
       description: 'The first and most valuable cryptocurrency',
       marketCap: '$1.2T',
@@ -69,7 +69,7 @@ export const useMining = () => {
       symbol: 'ETH', 
       icon: 'Ξ', 
       baseHashRate: 1000, 
-      baseEarning: 0.00347,
+      baseEarning: 0.01157, // 90 günde $25
       color: '#627EEA',
       description: 'Smart contract platform and DeFi leader',
       marketCap: '$400B',
@@ -81,7 +81,7 @@ export const useMining = () => {
       symbol: 'DOGE', 
       icon: 'Ð', 
       baseHashRate: 1000, 
-      baseEarning: 0.00347,
+      baseEarning: 0.01157, // 90 günde $25
       color: '#C2A633',
       description: 'The meme coin that became mainstream',
       marketCap: '$25B',
@@ -93,7 +93,7 @@ export const useMining = () => {
       symbol: 'LTC', 
       icon: 'Ł', 
       baseHashRate: 1000, 
-      baseEarning: 0.00347,
+      baseEarning: 0.01157, // 90 günde $25
       color: '#BFBBBB',
       description: 'Digital silver to Bitcoin\'s gold',
       marketCap: '$8B',
@@ -105,7 +105,7 @@ export const useMining = () => {
       symbol: 'ADA',
       icon: '₳',
       baseHashRate: 1000,
-      baseEarning: 0.00347,
+      baseEarning: 0.01157, // 90 günde $25
       color: '#0033AD',
       description: 'Sustainable blockchain platform',
       marketCap: '$15B',
@@ -117,7 +117,7 @@ export const useMining = () => {
       symbol: 'DOT',
       icon: '●',
       baseHashRate: 1000,
-      baseEarning: 0.00347,
+      baseEarning: 0.01157, // 90 günde $25
       color: '#E6007A',
       description: 'Multi-chain interoperability protocol',
       marketCap: '$12B',
@@ -129,7 +129,7 @@ export const useMining = () => {
       symbol: 'SOL',
       icon: '◎',
       baseHashRate: 1000,
-      baseEarning: 0.00347,
+      baseEarning: 0.01157, // 90 günde $25
       color: '#9945FF',
       description: 'High-performance blockchain',
       marketCap: '$45B',
@@ -141,7 +141,7 @@ export const useMining = () => {
       symbol: 'MATIC',
       icon: '⬟',
       baseHashRate: 1000,
-      baseEarning: 0.00347,
+      baseEarning: 0.01157, // 90 günde $25
       color: '#8247E5',
       description: 'Ethereum scaling solution',
       marketCap: '$8B',
@@ -192,7 +192,7 @@ export const useMining = () => {
     return () => unsubscribe();
   }, [user]);
 
-  // Kazanç güncelleme mantığı - DÜZELTME
+  // Kazanç güncelleme mantığı - 24 SAAT LİMİTİ KALDIRILDI
   useEffect(() => {
     if (!user || activeSessions.length === 0) {
       if (earningsIntervalRef.current) {
@@ -224,11 +224,8 @@ export const useMining = () => {
         const elapsedSeconds = (now - sessionStartTime) / 1000;
         const elapsedHours = elapsedSeconds / 3600;
 
-        // Maksimum 24 saat kontrolü
-        if (elapsedHours > 24) {
-          await stopMining(activeSession.id, 'Maximum duration exceeded');
-          return;
-        }
+        // ❌ 24 SAAT KONTROLÜ KALDIRILDI - Sınırsız madencilik!
+        // Artık madencilik sadece kullanıcı durdurduğunda veya trial/paket limitlerine ulaşıldığında duracak
 
         // Saatlik kazanç hesaplama
         let hourlyEarning = coin.baseEarning; // Varsayılan trial kazancı
@@ -396,7 +393,7 @@ export const useMining = () => {
       const sessionsRef = ref(database, `miningSessions/${user.uid}`);
       await push(sessionsRef, newSession);
       
-      toast.success(`${coin.name} mining started!`);
+      toast.success(`${coin.name} mining started! Will continue until you stop it.`);
       lastUpdateTimeRef.current = Date.now();
     } catch (error) {
       console.error('Error starting mining:', error);

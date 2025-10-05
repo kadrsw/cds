@@ -3,7 +3,7 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, User, ArrowLeft, Share2, Facebook, Twitter, Linkedin } from 'lucide-react';
 import { blogPosts } from '../data/blogPosts';
-import SEO from '../components/SEO'; // ← YENİ: SEO component import
+import { SEOHead } from '../components/SEOHead'; // ← Mevcut SEOHead import
 
 export const BlogPostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -26,15 +26,13 @@ export const BlogPostPage: React.FC = () => {
 
   return (
     <>
-      {/* ← YENİ: SEO Component eklendi - Eski useEffect SEO kodu silindi */}
-      <SEO
-        title={`${post.title} | FreeCloudMiner Blog`}
-        description={post.excerpt}
-        keywords={`${post.title}, kripto madencilik, bitcoin, ethereum, blockchain`}
-        canonicalUrl={`https://www.freecloudminer.com/blog/${slug}`}
-        ogImage={post.image}
-        ogType="article"
-        article={true}
+      {/* ← Düzeltilmiş SEOHead kullanımı - Eski useEffect kodu artık gerekli değil */}
+      <SEOHead
+        customTitle={`${post.title} | FreeCloudMiner Blog`}
+        customDescription={post.excerpt}
+        customKeywords={`${post.title}, kripto madencilik, bitcoin, ethereum, blockchain, cloud mining`}
+        customOgImage={post.image}
+        isArticle={true}
         publishedTime={post.publishDate}
         modifiedTime={post.publishDate}
         breadcrumbs={[

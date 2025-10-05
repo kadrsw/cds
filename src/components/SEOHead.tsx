@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
 
 interface SEOContent {
@@ -8,7 +9,6 @@ interface SEOContent {
   ogTitle: string;
   ogDescription: string;
 }
-// HATA DÜZELTME: Yukarıdaki interface tanımının sonuna noktalı virgül (;) eklendi.
 
 const seoContent: Record<string, SEOContent> = {
   // --- TÜRKÇE (TR) - Tamamen Optimize Edildi ---
@@ -61,49 +61,186 @@ const seoContent: Record<string, SEOContent> = {
   }
 };
 
-export const SEOHead: React.FC = () => {
+interface SEOHeadProps {
+  // Blog sayfaları için override edilebilir SEO bilgileri
+  customTitle?: string;
+  customDescription?: string;
+  customKeywords?: string;
+  customOgImage?: string;
+  isArticle?: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
+  breadcrumbs?: Array<{ name: string; url: string }>;
+}
+
+export const SEOHead: React.FC<SEOHeadProps> = ({
+  customTitle,
+  customDescription,
+  customKeywords,
+  customOgImage,
+  isArticle = false,
+  publishedTime,
+  modifiedTime,
+  breadcrumbs
+}) => {
   const { language } = useLanguage();
+  const location = useLocation();
 
   useEffect(() => {
     const content = seoContent[language] || seoContent['en'];
 
-    document.title = content.title;
+    // Title belirleme - custom varsa onu kullan, yoksa default
+    const finalTitle = customTitle || content.title;
+    document.title = finalTitle;
 
+    // Description
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', content.description);
+      metaDescription.setAttribute('content', customDescription || content.description);
     }
 
+    // Keywords
     const metaKeywords = document.querySelector('meta[name="keywords"]');
     if (metaKeywords) {
-      metaKeywords.setAttribute('content', content.keywords);
+      metaKeywords.setAttribute('content', customKeywords || content.keywords);
     }
 
+    // Open Graph Title
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) {
-      ogTitle.setAttribute('content', content.ogTitle);
+      ogTitle.setAttribute('content', customTitle || content.ogTitle);
     }
 
+    // Open Graph Description
     const ogDescription = document.querySelector('meta[property="og:description"]');
     if (ogDescription) {
-      ogDescription.setAttribute('content', content.ogDescription);
+      ogDescription.setAttribute('content', customDescription || content.ogDescription);
     }
 
+    // Open Graph Image
+    const ogImage = document.querySelector('meta[property="og:image"]');
+    if (ogImage && customOgImage) {
+      ogImage.setAttribute('content', customOgImage);
+    }
+
+    // Open Graph Type
+    const ogType = document.querySelector('meta[property="og:type"]');
+    if (ogType) {
+      ogType.setAttribute('content', isArticle ? 'article' : 'website');
+    }
+
+    // Twitter Title
     const twitterTitle = document.querySelector('meta[name="twitter:title"]');
     if (twitterTitle) {
-      twitterTitle.setAttribute('content', content.ogTitle);
+      twitterTitle.setAttribute('content', customTitle || content.ogTitle);
     }
 
+    // Twitter Description
     const twitterDescription = document.querySelector('meta[name="twitter:description"]');
     if (twitterDescription) {
-      twitterDescription.setAttribute('content', content.ogDescription);
+      twitterDescription.setAttribute('content', customDescription || content.ogDescription);
     }
 
+    // ✅ DÜZELTME: Canonical URL - Dil prefix'i KALDIRILDI
+    // Dropdown dil sistemi kullanıldığı için URL değişmiyor
     const canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) {
-      canonical.setAttribute('href', `https://www.freecloudminer.com/${language}/`);
+      // Gerçek URL'i kullan (dil prefix'siz)
+      const baseUrl = 'https://www.freecloudminer.com';
+      const currentPath = location.pathname;
+      canonical.setAttribute('href', `${baseUrl}${currentPath}`);
     }
-  }, [language]);
+
+    // Article meta tags (blog yazıları için)
+    if (isArticle && publishedTime) {
+      let articlePublished = document.querySelector('meta[property="article:published_time"]');
+      if (!articlePublished) {
+        articlePublished = document.createElement('meta');
+        articlePublished.setAttribute('property', 'article:published_time');
+        document.head.appendChild(articlePublished);
+      }
+      articlePublished.setAttribute('content', publishedTime);
+    }
+
+    if (isArticle && modifiedTime) {
+      let articleModified = document.querySelector('meta[property="article:modified_time"]');
+      if (!articleModified) {
+        articleModified = document.createElement('meta');
+        articleModified.setAttribute('property', 'article:modified_time');
+        document.head.appendChild(articleModified);
+      }
+      articleModified.setAttribute('content', modifiedTime);
+    }
+
+    // Breadcrumb Schema
+    if (breadcrumbs && breadcrumbs.length > 0) {
+      // Mevcut breadcrumb script'i kaldır
+      const existingBreadcrumb = document.querySelector('script[data-breadcrumb="true"]');
+      if (existingBreadcrumb) {
+        existingBreadcrumb.remove();
+      }
+
+      const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": breadcrumbs.map((crumb, index) => ({
+          "@type": "ListItem",
+          "position": index + 1,
+          "name": crumb.name,
+          "item": crumb.url
+        }))
+      };
+
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.setAttribute('data-breadcrumb', 'true');
+      script.innerHTML = JSON.stringify(breadcrumbSchema);
+      document.head.appendChild(script);
+    }
+
+    // Article Schema (blog yazıları için)
+    if (isArticle && customTitle) {
+      // Mevcut article script'i kaldır
+      const existingArticle = document.querySelector('script[data-article="true"]');
+      if (existingArticle) {
+        existingArticle.remove();
+      }
+
+      const articleSchema = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": customTitle,
+        "description": customDescription || content.description,
+        "image": customOgImage || "https://www.freecloudminer.com/og-image.jpg",
+        "datePublished": publishedTime,
+        "dateModified": modifiedTime || publishedTime,
+        "url": `https://www.freecloudminer.com${location.pathname}`,
+        "inLanguage": language,
+        "author": {
+          "@type": "Organization",
+          "name": "FreeCloudMiner GmbH"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "FreeCloudMiner GmbH",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.freecloudminer.com/logo.png"
+          }
+        },
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": `https://www.freecloudminer.com${location.pathname}`
+        }
+      };
+
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.setAttribute('data-article', 'true');
+      script.innerHTML = JSON.stringify(articleSchema);
+      document.head.appendChild(script);
+    }
+  }, [language, location, customTitle, customDescription, customKeywords, customOgImage, isArticle, publishedTime, modifiedTime, breadcrumbs]);
 
   return null;
 };

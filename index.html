@@ -54,27 +54,13 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#1F2937" />
     <link rel="manifest" href="/site.webmanifest" />
     
-    <!-- ✅ DÜZELTİLDİ: Canonical URL - Sadece ana sayfa için -->
+    <!-- ✅ Canonical URL - Sadece ana sayfa -->
     <link rel="canonical" href="https://www.freecloudminer.com/" />
     
-    <!-- ✅ DÜZELTİLDİ: Hreflang Tags - Self-referencing eklendi -->
-    <!-- ÖNEMLI: Her dil versiyonunda kendi dilini self-referencing olarak göstermelisiniz -->
-    <!-- TR versiyonu (bu dosya Türkçe ana sayfa için) -->
-    <link rel="alternate" hreflang="tr" href="https://www.freecloudminer.com/" />
-    <link rel="alternate" hreflang="en" href="https://www.freecloudminer.com/en/" />
-    <link rel="alternate" hreflang="de" href="https://www.freecloudminer.com/de/" />
-    <link rel="alternate" hreflang="ru" href="https://www.freecloudminer.com/ru/" />
-    <link rel="alternate" hreflang="ar" href="https://www.freecloudminer.com/ar/" />
-    <link rel="alternate" hreflang="zh" href="https://www.freecloudminer.com/zh/" />
-    <link rel="alternate" hreflang="x-default" href="https://www.freecloudminer.com/" />
+    <!-- ❌ HREFLANG SİLİNDİ - Çünkü URL-based dil sistemi YOK -->
+    <!-- Eğer ileride URL-based dil eklerseniz (örn: /en/, /de/), o zaman hreflang ekleyin -->
     
-    <!-- NOT: Diğer dil versiyonlarında (örn: /en/index.html) şöyle olmalı:
-    <link rel="alternate" hreflang="tr" href="https://www.freecloudminer.com/" />
-    <link rel="alternate" hreflang="en" href="https://www.freecloudminer.com/en/" />
-    <link rel="canonical" href="https://www.freecloudminer.com/en/" />
-    -->
-    
-    <!-- PERFORMANS İYİLEŞTİRMELERİ: KRİTİK İSTEK ZİNCİRİNİ HIZLANDIRMA -->
+    <!-- PERFORMANS İYİLEŞTİRMELERİ -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://www.googletagmanager.com" />
@@ -85,13 +71,13 @@
     <link rel="preconnect" href="https://static.hotjar.com" />
     <link rel="preconnect" href="https://www.clarity.ms" />
 
-    <!-- LCP Resmi Ön Yükleme (Preload) -->
+    <!-- LCP Resmi Ön Yükleme -->
     <link rel="preload" href="https://www.freecloudminer.com/logo.png" as="image">
 
-    <!-- Kritik Yazı Tipini Önceden Yükleme (Preload) -->
+    <!-- Kritik Yazı Tipini Önceden Yükleme -->
     <link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/UcCO3FZYsFpT-hIdSIjXWw.woff2" as="font" type="font/woff2" crossorigin>
 
-    <!-- DNS Prefetch (Daha az kritik bağlantılar için) -->
+    <!-- DNS Prefetch -->
     <link rel="dns-prefetch" href="//www.google-analytics.com" />
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
@@ -306,7 +292,6 @@
     <!-- Main content landmark -->
     <main id="main-content" style="display: none;"></main>
     
-    <!-- Modül ön yüklemesi ve performans izleme -->
     <script>
       // Kritik modülleri ön yükle
       const criticalResources = ['/src/main.tsx'];

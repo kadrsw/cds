@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight, Search, Tag, Hammer, Home } from 'lucide-react';
 import { blogPosts } from '../data/blogPosts';
-import SEO from '../components/SEO'; // ← YENİ: SEO component import
+import { SEOHead } from '../components/SEOHead'; // ← Mevcut SEOHead import
 
 export const BlogPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,13 +27,11 @@ export const BlogPage: React.FC = () => {
 
   return (
     <>
-      {/* ← YENİ: SEO Component eklendi */}
-      <SEO
-        title="Blog - Kripto Para Madenciliği Rehberleri | FreeCloudMiner"
-        description="Bitcoin, Ethereum, blockchain ve kripto para madenciliği hakkında güncel bilgiler, rehberler ve piyasa analizleri. Online free mining ve crypto miner detaylı rehberi."
-        keywords="bitcoin madenciliği, ethereum madenciliği, cloud mining, kripto para rehberi, blockchain, bitcoin mining free, online free mining, crypto miner, coin mining"
-        canonicalUrl="https://www.freecloudminer.com/blog"
-        ogImage="https://www.freecloudminer.com/blog-og-image.jpg"
+      {/* ← Düzeltilmiş SEOHead kullanımı */}
+      <SEOHead
+        customTitle="Blog - Kripto Para Madenciliği Rehberleri | FreeCloudMiner"
+        customDescription="Bitcoin, Ethereum, blockchain ve kripto para madenciliği hakkında güncel bilgiler, rehberler ve piyasa analizleri. Online free mining ve crypto miner detaylı rehberi."
+        customKeywords="bitcoin madenciliği, ethereum madenciliği, cloud mining, kripto para rehberi, blockchain, bitcoin mining free, online free mining, crypto miner, coin mining"
         breadcrumbs={[
           { name: 'Ana Sayfa', url: 'https://www.freecloudminer.com' },
           { name: 'Blog', url: 'https://www.freecloudminer.com/blog' }

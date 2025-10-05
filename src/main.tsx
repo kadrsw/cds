@@ -1,5 +1,6 @@
 import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { HelmetProvider } from 'react-helmet-async'; // ← YENİ: SEO için eklendi
 import App from './App.tsx';
 import './index.css';
 
@@ -33,6 +34,10 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <HelmetProvider> {/* ← YENİ: SEO meta tag'leri için */}
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    </HelmetProvider> {/* ← YENİ */}
   </StrictMode>
 );

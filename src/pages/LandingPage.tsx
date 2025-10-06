@@ -70,14 +70,14 @@ export const LandingPage: React.FC = () => {
       {/* Header */}
       <header className="landing-header fixed top-0 w-full z-50 transition-all duration-300 bg-gray-800/95 backdrop-blur-md border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex justify-between items-center py-4" role="navigation" aria-label="Ana navigasyon">
+          <nav className="flex justify-between items-center py-3" role="navigation" aria-label="Ana navigasyon">
             <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-                <Hammer className="h-6 w-6 text-white" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                <Hammer className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-white">FreeCloudMiner</h1>
+              <h1 className="text-lg sm:text-2xl font-bold text-white">FreeCloudMiner</h1>
             </div>
-            
+
             <div className="hidden md:flex space-x-8">
               <a href="/blog" className="text-gray-300 hover:text-white transition-colors">{t('blog')}</a>
               <a href="#özellikler" className="text-gray-300 hover:text-white transition-colors">{t('features')}</a>
@@ -85,18 +85,20 @@ export const LandingPage: React.FC = () => {
               <a href="#paketler" className="text-gray-300 hover:text-white transition-colors">{t('packages2')}</a>
               <a href="#sss" className="text-gray-300 hover:text-white transition-colors">{t('faq')}</a>
             </div>
-            
-            <div className="hidden md:block">
-              <LanguageSelector />
+
+            <div className="flex items-center space-x-2">
+              <div className="w-32 sm:w-40">
+                <LanguageSelector />
+              </div>
+
+              <Link
+                to="/auth"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-3 py-2 sm:px-6 text-xs sm:text-base rounded-lg font-semibold transition-all whitespace-nowrap"
+                aria-label={t('freeBonus')}
+              >
+                {t('freeBonus')}
+              </Link>
             </div>
-            
-            <Link
-              to="/auth"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition-all transform hover:scale-105"
-              aria-label={t('freeBonus')}
-            >
-              {t('freeBonus')}
-            </Link>
           </nav>
         </div>
       </header>
@@ -109,18 +111,18 @@ export const LandingPage: React.FC = () => {
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center">
-              <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-white">
+              <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-white leading-tight">
                 {t('heroTitle')}
               </h2>
 
-              <p className="text-xl md:text-2xl mb-8 text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-xl md:text-2xl mb-8 text-gray-300 max-w-4xl mx-auto leading-relaxed px-4">
                 {t('heroSubtitle')}
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 px-4">
                 <Link
                   to="/auth"
-                  className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black px-8 py-4 rounded-xl text-xl font-bold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                  className="w-full sm:w-auto bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black px-6 py-3 sm:px-8 sm:py-4 rounded-xl text-base sm:text-xl font-bold transition-all shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
                   aria-label={t('freeBonus')}
                 >
                   <span>🎁</span>
@@ -129,7 +131,7 @@ export const LandingPage: React.FC = () => {
 
                 <a
                   href="#özellikler"
-                  className="border-2 border-white text-white hover:bg-white hover:text-gray-900 px-8 py-4 rounded-xl text-xl font-semibold transition-all transform hover:scale-105"
+                  className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-gray-900 px-6 py-3 sm:px-8 sm:py-4 rounded-xl text-base sm:text-xl font-semibold transition-all text-center"
                   aria-label={t('howItWorks')}
                 >
                   {t('howItWorks')}
@@ -137,22 +139,22 @@ export const LandingPage: React.FC = () => {
               </div>
               
               {/* Stats Grid - Competitor Analysis Enhanced */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-                <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-                  <h3 className="text-3xl md:text-4xl font-bold text-yellow-400 mb-2">2,500+</h3>
-                  <p className="text-gray-300">Aktif Hash Madenci</p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 max-w-4xl mx-auto px-4">
+                <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 sm:p-6 border border-white/20">
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-400 mb-1 sm:mb-2">2,500+</h3>
+                  <p className="text-gray-300 text-xs sm:text-base">Aktif Hash Madenci</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-                  <h3 className="text-3xl md:text-4xl font-bold text-green-400 mb-2">€250K+</h3>
-                  <p className="text-gray-300">Günlük Bitcoin Ödemesi</p>
+                <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 sm:p-6 border border-white/20">
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-400 mb-1 sm:mb-2">€250K+</h3>
+                  <p className="text-gray-300 text-xs sm:text-base">Günlük Bitcoin Ödemesi</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-                  <h3 className="text-3xl md:text-4xl font-bold text-blue-400 mb-2">24/7</h3>
-                  <p className="text-gray-300">Otomatik Madencilik</p>
+                <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 sm:p-6 border border-white/20">
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-400 mb-1 sm:mb-2">24/7</h3>
+                  <p className="text-gray-300 text-xs sm:text-base">Otomatik Madencilik</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-                  <h3 className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">0</h3>
-                  <p className="text-gray-300">Teknik Bilgi Gerekli</p>
+                <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 sm:p-6 border border-white/20">
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-purple-400 mb-1 sm:mb-2">0</h3>
+                  <p className="text-gray-300 text-xs sm:text-base">Teknik Bilgi Gerekli</p>
                 </div>
               </div>
             </div>
@@ -162,9 +164,9 @@ export const LandingPage: React.FC = () => {
         {/* Features Section - Enhanced with competitor insights */}
         <section id="özellikler" className="py-20 bg-black/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">{t('whyChooseUs')}</h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <div className="text-center mb-16 px-4">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-white">{t('whyChooseUs')}</h2>
+              <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto">
                 {t('heroSubtitle')}
               </p>
             </div>
@@ -236,9 +238,9 @@ export const LandingPage: React.FC = () => {
         {/* Supported Coins - Enhanced SEO */}
         <section id="madencilik" className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Cloud Miner ile Hash Gücü Kiralama Destekli Kriptolar</h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <div className="text-center mb-16 px-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white leading-tight">Cloud Miner ile Hash Gücü Kiralama Destekli Kriptolar</h2>
+              <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto">
                 Donanım olmadan en popüler kripto paraların Coin Mining işlemlerini yapın. Güvenilir Crypto Miner hizmetimizle her kripto için optimize edilmiş hash gücü kiralama paketlerimiz mevcuttur.
               </p>
             </div>
@@ -304,9 +306,9 @@ export const LandingPage: React.FC = () => {
         {/* Packages Section - Keeping original as requested */}
         <section id="paketler" className="py-20 bg-black/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Bitcoin Mining Program Alternatifi Cloud Mining Paketleri</h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <div className="text-center mb-16 px-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white leading-tight">Bitcoin Mining Program Alternatifi Cloud Mining Paketleri</h2>
+              <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto">
                Online Free Mining deneyimine başlamak için size en uygun paketi seçin ve pasif Bitcoin Mining Free geliri kazanmaya hemen başlayın.
               </p>
             </div>
@@ -441,9 +443,9 @@ export const LandingPage: React.FC = () => {
         {/* FAQ Section - Enhanced with competitor keywords */}
         <section id="sss" className="py-20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Cloud Mining Free ve Bitcoin Mining Program Sık Sorulan Sorular</h2>
-              <p className="text-xl text-gray-300">
+            <div className="text-center mb-16 px-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white leading-tight">Cloud Mining Free ve Bitcoin Mining Program Sık Sorulan Sorular</h2>
+              <p className="text-base sm:text-xl text-gray-300">
                Crypto Miner hizmetimiz, hash gücü kiralama ve Online Free Mining hakkında merak edilenler. Tüm Coin Mining ve pasif gelir sorularınızın cevapları burada.
               </p>
             </div>
@@ -489,24 +491,24 @@ export const LandingPage: React.FC = () => {
         {/* CTA Section - Enhanced */}
         <section className="py-20 bg-gradient-to-r from-blue-600/20 to-purple-600/20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white leading-tight px-4">
               Bitcoin Mining Free ile Pasif Kazanç Sağlamaya Hemen Başla!
             </h2>
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-gray-300 mb-8 max-w-2xl mx-auto px-4">
               Cloud Mining Free hizmetimizle pasif gelir Coin Mining deneyimine başlayın. $25 ücretsiz bonus ile ASIC alternatifi güvenilir Crypto Miner hizmetimizi hemen deneyimleyin.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link 
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4">
+              <Link
                 to="/auth"
-                className="inline-flex items-center space-x-3 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black px-8 py-4 rounded-xl text-xl font-bold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black px-4 py-3 sm:px-8 sm:py-4 rounded-xl text-sm sm:text-xl font-bold transition-all shadow-lg hover:shadow-xl text-center"
                 aria-label="Bitcoin kazanmaya ücretsiz başla"
               >
                 <span>🚀</span>
-                <span>Cloud Mining Free Başlat - Ücretsiz $25 Bonus Al</span>
+                <span className="text-xs sm:text-base">Cloud Mining Free Başlat - Ücretsiz $25 Bonus Al</span>
               </Link>
-              <a 
-                href="mailto:freecloudeminer1@gmail.com" 
-                className="inline-flex items-center space-x-2 border-2 border-white text-white hover:bg-white hover:text-gray-900 px-6 py-4 rounded-xl text-lg font-semibold transition-all"
+              <a
+                href="mailto:freecloudeminer1@gmail.com"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 border-2 border-white text-white hover:bg-white hover:text-gray-900 px-4 py-3 sm:px-6 sm:py-4 rounded-xl text-sm sm:text-lg font-semibold transition-all"
               >
                 <span>💬</span>
                 <span>Hash Gücü Desteği</span>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useLanguage } from '../hooks/useLanguage';
-import { PlusCircle, Edit, Trash2, Eye, Save, X } from 'lucide-react';
+import { PlusCircle, FileEdit as Edit, Trash2, Eye, Save, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface BlogPost {

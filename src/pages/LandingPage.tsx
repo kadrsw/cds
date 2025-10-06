@@ -174,7 +174,7 @@ export const LandingPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <article className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-blue-500/50 transition-all hover:transform hover:scale-105 group">
                 <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <Server className="h-8 w-8 text-white" />
+                  <Shield className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-4">{t('secureTitle')}</h3>
                 <p className="text-gray-300 leading-relaxed">
@@ -184,7 +184,7 @@ export const LandingPage: React.FC = () => {
 
               <article className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-blue-500/50 transition-all hover:transform hover:scale-105 group">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <Cpu className="h-8 w-8 text-white" />
+                  <Zap className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-4">{t('highPerformanceTitle')}</h3>
                 <p className="text-gray-300 leading-relaxed">
@@ -206,29 +206,29 @@ export const LandingPage: React.FC = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <Target className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">{t('secureTitle')}</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">{t('easyToUseTitle')}</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  {t('secureDesc')}
+                  {t('easyToUseDesc')}
                 </p>
               </article>
 
               <article className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-blue-500/50 transition-all hover:transform hover:scale-105 group">
                 <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <RotateCcw className="h-8 w-8 text-white" />
+                  <CheckCircle className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">{t('highPerformanceTitle')}</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">{t('transparentTitle')}</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  {t('highPerformanceDesc')}
+                  {t('transparentDesc')}
                 </p>
               </article>
 
               <article className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-blue-500/50 transition-all hover:transform hover:scale-105 group">
                 <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-green-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <Smartphone className="h-8 w-8 text-white" />
+                  <Users className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">{t('dailyPaymentsTitle')}</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">{t('support247Title')}</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  {t('dailyPaymentsDesc')}
+                  {t('support247Desc')}
                 </p>
               </article>
             </div>

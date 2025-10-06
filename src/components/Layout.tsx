@@ -3,18 +3,19 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useLanguage } from '../hooks/useLanguage';
 import { LanguageSelector } from './LanguageSelector';
-import { 
-  Home, 
+import {
+  Home,
   Hammer, // Pickaxe yerine Hammer kullanıldı (Build hatası düzeltildi)
-  Package, 
-  User, 
-  Settings, 
-  LogOut, 
-  Menu, 
+  Package,
+  User,
+  Settings,
+  LogOut,
+  Menu,
   X,
   DollarSign,
   Shield,
-  MessageCircle
+  MessageCircle,
+  FileText
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -51,12 +52,15 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navItems = [
     { path: '/dashboard', label: t('dashboard'), icon: Home },
     // Pickaxe yerine Hammer kullanıldı
-    { path: '/mining', label: t('mining'), icon: Hammer }, 
+    { path: '/mining', label: t('mining'), icon: Hammer },
     { path: '/packages', label: t('packages'), icon: Package },
     { path: '/withdrawal', label: t('withdrawal'), icon: DollarSign },
     { path: '/support', label: t('support'), icon: MessageCircle },
     { path: '/profile', label: t('profile'), icon: User },
-    ...(user?.isAdmin ? [{ path: '/admin', label: t('admin'), icon: Shield }] : [])
+    ...(user?.isAdmin ? [
+      { path: '/admin', label: t('admin'), icon: Shield },
+      { path: '/blog-manage', label: 'Blog Yönetimi', icon: FileText }
+    ] : [])
   ];
 
   return (

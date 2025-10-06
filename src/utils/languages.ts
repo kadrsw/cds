@@ -110,6 +110,20 @@ export const translations: Record<string, Translation> = {
     highPerformanceDesc: 'Son teknoloji madencilik donanımları ile maksimum hash rate ve verimlilik.',
     dailyPaymentsTitle: 'Günlük Ödemeler',
     dailyPaymentsDesc: 'Kazançlarınız günlük olarak hesaplanır ve bakiyenize eklenir.',
+
+    // New Features
+    easyToUseTitle: 'Kolay Kullanım',
+    easyToUseDesc: 'Teknik bilgiye gerek yok. Birkaç tıklama ile madenciliğe başlayın ve pasif gelir elde edin.',
+    transparentTitle: 'Şeffaf Sistem',
+    transparentDesc: 'Tüm işlemler ve kazançlar gerçek zamanlı olarak görüntülenebilir. Gizli ücret yok.',
+    support247Title: '7/24 Destek',
+    support247Desc: 'Profesyonel destek ekibimiz her zaman yanınızda. Türkçe destek mevcut.',
+    multiCoinTitle: 'Çoklu Kripto Desteği',
+    multiCoinDesc: 'Bitcoin, Ethereum, Dogecoin ve daha fazla kripto para ile çeşitlendirilmiş madencilik.',
+    lowMinimumTitle: 'Düşük Başlangıç',
+    lowMinimumDesc: 'Sadece 99 USD ile profesyonel madencilik deneyimine başlayın.',
+    mobileOptimizedTitle: 'Mobil Uyumlu',
+    mobileOptimizedDesc: 'Telefonunuzdan bile tüm işlemlerinizi kolayca yönetin ve kazançlarınızı takip edin.',
     
     // Common
     loading: 'Yükleniyor...',

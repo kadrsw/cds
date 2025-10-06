@@ -1,5 +1,8 @@
+# FreeCloudMiner - Legitimate Cloud Mining Service
 User-agent: *
 Allow: /
+Allow: /blog
+Allow: /blog/*
 Disallow: /dashboard
 Disallow: /admin
 Disallow: /auth
@@ -8,8 +11,20 @@ Disallow: /mining
 Disallow: /packages
 Disallow: /withdrawal
 Disallow: /support
+Disallow: /api/
+Disallow: /*.json$
 
 Sitemap: https://www.freecloudminer.com/sitemap.xml
 
-# Google crawl rate
-Crawl-delay: 1
+# Crawl rate - Respectful crawling
+Crawl-delay: 2
+
+# Block bad bots
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Crawl-delay: 10
+
+# Host declaration
+Host: https://www.freecloudminer.com

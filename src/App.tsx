@@ -15,6 +15,7 @@ import { SupportPage } from './pages/SupportPage';
 import { AuthPage } from './pages/AuthPage';
 import { BlogPage } from './pages/BlogPage';
 import { BlogPostPage } from './pages/BlogPostPage';
+import { BlogManagePage } from './pages/BlogManagePage';
 import { useAuth } from './hooks/useAuth';
 
 function App() {
@@ -164,15 +165,26 @@ function App() {
               } 
             />
             
-            <Route 
-              path="/support" 
+            <Route
+              path="/support"
               element={
                 <ProtectedRoute>
                   <Layout>
                     <SupportPage />
                   </Layout>
                 </ProtectedRoute>
-              } 
+              }
+            />
+
+            <Route
+              path="/blog-manage"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <BlogManagePage />
+                  </Layout>
+                </ProtectedRoute>
+              }
             />
             
             {/* 404 sayfası - bilinmeyen route'lar için */}
